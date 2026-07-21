@@ -284,3 +284,92 @@ button:hover { opacity: 0.85; }
   color: #9a8ba0;
   cursor: not-allowed;
 }
+
+/* ============================================
+   홈 화면 (타이틀 이미지 배경 + 오른쪽 시작 버튼)
+   파일: assets/ui/title-logo.png
+   ============================================ */
+.home-screen {
+  position: fixed;
+  inset: 0;
+  background-image: url("../assets/ui/title-logo.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8%;
+}
+
+.home-start-btn {
+  font-size: 20px;
+  padding: 16px 52px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #2a2130;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+  transition: transform 0.15s;
+}
+
+.home-start-btn:hover {
+  transform: scale(1.05);
+}
+
+.home-sub-text {
+  color: #6a5560;
+  font-size: 13px;
+  max-width: 220px;
+  text-align: center;
+  margin: 0;
+}
+
+@media (max-width: 700px) {
+  .home-screen {
+    justify-content: center;
+    padding-right: 0;
+    padding-bottom: 10%;
+    align-items: flex-end;
+  }
+}
+
+.sakura-petals {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.petal {
+  position: absolute;
+  top: -10%;
+  opacity: 0;
+  animation-name: petal-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform, opacity;
+}
+
+.petal svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+@keyframes petal-fall {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(115vh) translateX(var(--drift, 40px)) rotate(var(--spin, 360deg));
+    opacity: 0.7;
+  }
+}

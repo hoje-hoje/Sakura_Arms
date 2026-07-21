@@ -7,6 +7,18 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌸</text></svg>">
   <link rel="stylesheet" href="css/style.css">
 </head>
+<script>
+  window.onerror = function (message, source, lineno, colno, error) {
+    document.body.innerHTML =
+      '<pre style="color:#ffb3b3;background:#1a1420;padding:24px;white-space:pre-wrap;font-size:14px;line-height:1.6;">' +
+      '에러 발생!\n\n' +
+      '메시지: ' + message + '\n' +
+      '파일: ' + source + '\n' +
+      '줄 번호: ' + lineno + '\n\n' +
+      (error && error.stack ? error.stack : '') +
+      '</pre>';
+  };
+</script>
 <body>
   <div id="app"></div>
 
