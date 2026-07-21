@@ -4,8 +4,10 @@
 // 각 함수는 상태를 바꾸고 render()를 호출해 화면을 갱신합니다.
 // ============================================
 
-// 1. 쌍장요란: 여신 2개 선택
-function selectGoddess(playerIndex, goddessId) {
+// 1. 쌍장요란: 여신 2개 선택 (미코토 1 -> 미코토 2 순서로 진행)
+// ssangjangUI(진행 중인 미코토 번호, 포커스 위치 등 UI 상태)는 gameState.js에 정의되어 있음
+
+function toggleGoddessSelection(playerIndex, goddessId) {
   const player = gameState.players[playerIndex];
   const goddess = GODDESSES.find((g) => g.id === goddessId);
   if (!goddess) return;
@@ -20,14 +22,19 @@ function selectGoddess(playerIndex, goddessId) {
   render();
 }
 
-function confirmSsangjangYoran() {
-  const allReady = gameState.players.every((p) => p.goddesses.length === 2);
-  if (!allReady) {
-    alert("두 여신을 모두 선택해야 합니다.");
-    return;
+// "다음 ->" 버튼: 다음 미코토 차례로, 마지막 미코토면 안전구축으로
+function advanceSsangjangYoran() {
+  const activePlayer = gameState.players[ssangjangUI.activePlayerIndex];
+  if (activePlayer.goddesses.length < 2) return; // 안전장치
+
+  if (ssangjangUI.activePlayerIndex < gameState.players.length - 1) {
+    ssangjangUI.activePlayerIndex++;
+    ssangjangUI.focusedIndex = 0;
+    render();
+  } else {
+    gameState.phase = PHASE.ANJEON_GUCHUK;
+    render();
   }
-  gameState.phase = PHASE.ANJEON_GUCHUK;
-  render();
 }
 
 // 2. 안전구축: 통상패 7장, 비장패 3장 선택

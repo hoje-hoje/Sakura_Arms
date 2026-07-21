@@ -64,3 +64,223 @@ button:hover { opacity: 0.85; }
 .goddess-card.selected {
   border-color: var(--accent);
 }
+
+/* ============================================
+   홈 화면 (타이틀 이미지 배경 + 오른쪽 시작 버튼)
+   파일: assets/ui/title-logo.png
+   ============================================ */
+.home-screen {
+  position: fixed;
+  inset: 0;
+  background-image: url("assets/ui/title-logo.png");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8%;
+}
+
+.home-action-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.home-start-btn {
+  font-size: 20px;
+  padding: 16px 52px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #2a2130;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+  transition: transform 0.15s;
+}
+
+.home-start-btn:hover {
+  transform: scale(1.05);
+}
+
+.home-sub-text {
+  color: #6a5560;
+  font-size: 13px;
+  max-width: 220px;
+  text-align: center;
+  margin: 0;
+}
+
+@media (max-width: 700px) {
+  .home-screen {
+    justify-content: center;
+    padding-right: 0;
+    padding-bottom: 10%;
+    align-items: flex-end;
+  }
+}
+
+/* ============================================
+   쌍장요란 화면 (여신 선택)
+   배경/타이틀 이미지 파일 경로:
+   - assets/ui/ssangjang-bg.jpg   (배경 사진)
+   - assets/ui/ssangjang-title.png (쌍장요란 글자 이미지)
+   ============================================ */
+.ssangjang-screen {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+.ssangjang-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.ssangjang-title {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1.4);
+  opacity: 0;
+  height: 90px;
+  animation: ssangjang-title-move 1.1s ease forwards;
+}
+
+.ssangjang-title.intro-done {
+  animation: none;
+  top: 28px;
+  left: 28px;
+  transform: translate(0, 0) scale(0.55);
+  opacity: 1;
+}
+
+@keyframes ssangjang-title-move {
+  0% {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1.4);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    top: 28px;
+    left: 28px;
+    transform: translate(0, 0) scale(0.55);
+    opacity: 1;
+  }
+}
+
+.ssangjang-hud {
+  position: absolute;
+  top: 28px;
+  right: 32px;
+  z-index: 2;
+  text-align: right;
+  color: white;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.mikoto-label {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.selection-count {
+  font-size: 14px;
+  margin-top: 4px;
+  color: #f0d5df;
+}
+
+.goddess-select-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 120px 60px 100px;
+  overflow-y: auto;
+  user-select: none;
+}
+
+.select-card {
+  position: relative;
+  width: 130px;
+  height: 180px;
+  background: rgba(20, 14, 24, 0.6);
+  border: 2px solid transparent;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: border-color 0.12s, transform 0.12s, background 0.12s;
+}
+
+.select-card.focused {
+  border-color: var(--accent);
+  transform: scale(1.06);
+  background: rgba(232, 143, 176, 0.18);
+}
+
+.select-card.selected .select-mark {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.select-mark {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #ffffffaa;
+  border-radius: 3px;
+  background: transparent;
+}
+
+.select-thumb {
+  font-size: 40px;
+}
+
+.select-name {
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.next-btn {
+  position: absolute;
+  bottom: 28px;
+  right: 32px;
+  z-index: 2;
+  padding: 12px 32px;
+  border-radius: 999px;
+  border: none;
+  background: var(--accent);
+  color: #2a2130;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.next-btn:disabled {
+  background: #5a4d55;
+  color: #9a8ba0;
+  cursor: not-allowed;
+}

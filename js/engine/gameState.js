@@ -37,3 +37,14 @@ const gameState = {
 function logEvent(message) {
   gameState.log.push(message);
 }
+
+// ============================================
+// 쌍장요란 화면 전용 UI 상태
+// (게임 규칙이 아니라 "지금 화면에서 뭐가 포커스됐는지" 같은 화면 진행 상태)
+// ============================================
+const ssangjangUI = {
+  activePlayerIndex: 0, // 지금 고르는 중인 미코토 (0 = 미코토 1, 1 = 미코토 2)
+  focusedIndex: 0,      // 키보드/드래그로 움직이는 카드 위치 (GODDESSES 배열 인덱스)
+  isDragging: false,    // 마우스 클릭한 채로 드래그 중인지
+  introPlayed: false,   // "쌍장요란" 타이틀 중앙->좌상단 애니메이션을 한 번 재생했는지
+};
