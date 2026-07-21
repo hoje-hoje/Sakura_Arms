@@ -27,14 +27,13 @@ function renderHome() {
   const el = document.createElement("div");
   el.className = "home-screen";
   el.innerHTML = `
+    <img src="assets/ui/title-logo.png" class="home-logo" alt="벚꽃 내리는 시대에 결투를">
     <div class="home-action-panel">
       <button id="start-btn" class="home-start-btn">게임 시작</button>
       <p class="home-sub-text">현재는 로컬(hot-seat) 모드 — 한 화면에서 두 플레이어가 번갈아 진행합니다.</p>
     </div>
   `;
   el.querySelector("#start-btn").onclick = () => {
-    // TODO(온라인 전환 시): 여기서 바로 쌍장요란으로 넘어가지 않고
-    // "방 만들기 / 입장하기" 화면을 먼저 보여주도록 교체하면 됨.
     gameState.phase = PHASE.SSANGJANG_YORAN;
     render();
   };
