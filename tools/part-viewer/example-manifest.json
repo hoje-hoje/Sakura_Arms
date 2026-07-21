@@ -1,0 +1,8 @@
+{
+  "game-state": { "label": "gameState (상태)", "group": "엔진" },
+  "phases": { "label": "phases (진행 로직)", "group": "엔진" },
+  "goddess-data": { "label": "goddesses (여신 데이터)", "group": "데이터" },
+  "render": { "label": "render (화면)", "group": "UI" },
+  "main-style": { "label": "style.css", "group": "스타일" },
+  "__structure__": { "label": "index.html 뼈대" }
+}
