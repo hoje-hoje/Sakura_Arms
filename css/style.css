@@ -72,8 +72,7 @@ button:hover { opacity: 0.85; }
 .home-screen {
   position: fixed;
   inset: 0;
-  background-image: url("assets/ui/title-logo.png");
-  background-size: cover;
+  background-image: url("../assets/ui/title-logo.png");  background-size: cover;
   background-position: center;
   display: flex;
   align-items: center;
