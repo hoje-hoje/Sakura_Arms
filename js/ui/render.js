@@ -39,6 +39,7 @@ function renderHome() {
     render();
   };
   return el;
+}
 
 function renderSsangjangYoran() {
   const el = document.createElement("div");
