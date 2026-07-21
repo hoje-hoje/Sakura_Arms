@@ -72,27 +72,14 @@ button:hover { opacity: 0.85; }
 .home-screen {
   position: fixed;
   inset: 0;
-  background: #f7e3e8;
+  background-image: url("../assets/ui/title-logo.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 6%;
-  padding: 20px;
-}
-
-.home-logo {
-  max-height: 85vh;
-  max-width: 55vw;
-  width: auto;
-  height: auto;
-  object-fit: contain;
-}
-
-.home-action-panel {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
+  justify-content: flex-end;
+  padding-right: 8%;
 }
 
 .home-start-btn {
