@@ -1,0 +1,66 @@
+:root {
+  --bg: #1a1420;
+  --panel: #2a2130;
+  --accent: #e88fb0;
+  --text: #f0e6ec;
+  --card-bg: #ffffff;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+}
+
+#app {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.panel {
+  background: var(--panel);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+button {
+  background: var(--accent);
+  color: #2a2130;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover { opacity: 0.85; }
+
+.goddess-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 10px;
+}
+
+.goddess-card {
+  background: var(--card-bg);
+  color: #1a1420;
+  border-radius: 8px;
+  padding: 8px;
+  text-align: center;
+  cursor: pointer;
+  border: 3px solid transparent;
+}
+
+.goddess-card.selected {
+  border-color: var(--accent);
+}

@@ -1,0 +1,9 @@
+[
+  { "path": "../index.html", "label": "index.html", "group": "구조" },
+  { "path": "../js/main.js", "label": "main.js", "group": "구조" },
+  { "path": "../css/style.css", "label": "style.css", "group": "스타일" },
+  { "path": "../js/data/goddesses.js", "label": "goddesses.js (여신 데이터)", "group": "데이터" },
+  { "path": "../js/engine/gameState.js", "label": "gameState.js (상태)", "group": "엔진" },
+  { "path": "../js/engine/phases.js", "label": "phases.js (진행 로직)", "group": "엔진" },
+  { "path": "../js/ui/render.js", "label": "render.js (화면)", "group": "UI" }
+]
