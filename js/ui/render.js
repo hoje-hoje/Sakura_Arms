@@ -130,6 +130,7 @@ function renderSsangjangYoran() {
 
   el.innerHTML = `
     <img class="ssangjang-bg" src="assets/ui/ssangjang-bg.jpg" alt="">
+    <div class="ssangjang-glow" id="glow"></div>
     <div class="ssangjang-white-overlay ${ssangjangUI.introPlayed ? "intro-done" : ""}" id="overlay"></div>
     <img class="ssangjang-title ${ssangjangUI.introPlayed ? "intro-done" : ""}" id="title"
          src="assets/ui/ssangjang-title.png" alt="쌍장요란">
@@ -303,12 +304,12 @@ function ensureDominantColor(imgEl, goddessId, onReady) {
 // 화면 가장자리 전체에 포커스된 여신의 대표색으로 은은한 글로우
 function applyScreenGlow(index) {
   const g = GODDESSES[index];
-  const screen = document.querySelector(".ssangjang-screen");
-  if (!g || !screen) return;
+  const glow = document.getElementById("glow");
+  if (!g || !glow) return;
   if (g.image && dominantColorCache[g.id]) {
-    screen.style.boxShadow = `inset 0 0 170px 10px ${dominantColorCache[g.id]}`;
+    glow.style.boxShadow = `inset 0 0 170px 10px ${dominantColorCache[g.id]}`;
   } else {
-    screen.style.boxShadow = "inset 0 0 170px 10px rgba(232,143,176,0.35)";
+    glow.style.boxShadow = "inset 0 0 170px 10px rgba(232,143,176,0.35)";
   }
 }
 
