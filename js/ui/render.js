@@ -32,6 +32,7 @@ function renderHome() {
       <p class="home-sub-text">현재는 로컬(hot-seat) 모드 — 한 화면에서 두 플레이어가 번갈아 진행합니다.</p>
     </div>
   `;
+  el.appendChild(createSakuraPetals());
   el.querySelector("#start-btn").onclick = () => {
     // TODO(온라인 전환 시): 여기서 바로 쌍장요란으로 넘어가지 않고
     // "방 만들기 / 입장하기" 화면을 먼저 보여주도록 교체하면 됨.
@@ -39,6 +40,47 @@ function renderHome() {
     render();
   };
   return el;
+}
+
+// 홈 화면에 흩날리는 벚꽃잎 이펙트 생성
+function createSakuraPetals(count = 24) {
+  const container = document.createElement("div");
+  container.className = "sakura-petals";
+
+  const petalSVG = `
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <path d="M50 8
+               C 30 20, 18 40, 22 62
+               C 24 78, 36 90, 50 94
+               C 64 90, 76 78, 78 62
+               C 82 40, 70 20, 50 8
+               C 47 14, 53 14, 50 8 Z"
+            fill="#f3b8c9" />
+    </svg>
+  `;
+
+  for (let i = 0; i < count; i++) {
+    const petal = document.createElement("span");
+    petal.className = "petal";
+    petal.innerHTML = petalSVG;
+
+    const left = Math.random() * 100;
+    const duration = 8 + Math.random() * 8;
+    const delay = Math.random() * 12;
+    const size = 12 + Math.random() * 14;
+    const drift = Math.round(Math.random() * 160 - 80) + "px";
+    const spin = Math.random() > 0.5 ? "360deg" : "-360deg";
+
+    petal.style.left = left + "%";
+    petal.style.animationDuration = duration + "s";
+    petal.style.animationDelay = "-" + delay + "s";
+    petal.style.width = size + "px";
+    petal.style.height = size + "px";
+    petal.style.setProperty("--drift", drift);
+    petal.style.setProperty("--spin", spin);
+    container.appendChild(petal);
+  }
+  return container;
 }
 
 // 여신 이미지의 대표색 캐시 (한 번 계산한 건 재사용)
