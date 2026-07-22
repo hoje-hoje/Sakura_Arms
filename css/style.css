@@ -289,17 +289,26 @@ button:hover { opacity: 0.85; }
 /* ============================================
    왼쪽 큰 미리보기
    ============================================ */
-.focus-preview {
+.ssangjang-content {
   position: absolute;
-  left: 50px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 3;
-  width: 380px;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: stretch;
+  padding-top: 100px;
+  padding-bottom: 90px;
+}
+
+.focus-preview {
+  flex-shrink: 0;
+  width: 320px;
+  min-width: 220px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 12px;
+  padding: 0 20px;
   pointer-events: none;
 }
 
@@ -359,11 +368,10 @@ button:hover { opacity: 0.85; }
    격자 선택
    ============================================ */
 .goddess-grid-wrap {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
+  flex: 1;
+  min-width: 0;
   overflow-y: auto;
-  padding: 140px 40px 110px 420px;
+  padding: 20px 30px;
 }
 
 .goddess-grid {
