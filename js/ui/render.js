@@ -117,7 +117,7 @@ function createSakuraPetals(count = 24) {
 const dominantColorCache = {};
 
 // 쌍장요란 화면 전용 배경음악
-const ssangjangBGM = new Audio("assets/audio/ssangjang-bgm.mp3");
+const ssangjangBGM = new Audio("assets/audio/Zoltraak.mp3");
 ssangjangBGM.loop = true;
 ssangjangBGM.volume = 0.8;
 
