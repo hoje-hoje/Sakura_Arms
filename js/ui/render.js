@@ -13,6 +13,10 @@ function render() {
       break;
     case PHASE.SSANGJANG_YORAN:
       app.appendChild(renderSsangjangYoran());
+      // 화면에 실제로 붙은 뒤에 실행해야 요소를 찾을 수 있어서 여기서 호출함
+      updatePreviewPanel();
+      applyScreenGlow(ssangjangUI.focusedIndex);
+      centerFocusedCard();
       break;
     case PHASE.ANJEON_GUCHUK:
       app.appendChild(renderAnjeonGuchuk());
@@ -179,10 +183,6 @@ function renderSsangjangYoran() {
     track.classList.add("no-transition");
     trackWrap.classList.add("panning");
   });
-
-  updatePreviewPanel();
-  applyScreenGlow(ssangjangUI.focusedIndex);
-  centerFocusedCard();
 
   return el;
 }
