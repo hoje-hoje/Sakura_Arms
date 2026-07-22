@@ -18,6 +18,14 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+document.addEventListener("mousemove", (e) => {
+  if (gameState.phase === PHASE.SSANGJANG_YORAN) {
+    handleSsangjangMouseMove(e);
+  }
+});
+
 document.addEventListener("mouseup", () => {
-  ssangjangUI.isDragging = false;
+  if (gameState.phase === PHASE.SSANGJANG_YORAN) {
+    handleSsangjangMouseUp();
+  }
 });

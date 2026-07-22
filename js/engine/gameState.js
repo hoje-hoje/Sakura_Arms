@@ -44,7 +44,12 @@ function logEvent(message) {
 // ============================================
 const ssangjangUI = {
   activePlayerIndex: 0, // 지금 고르는 중인 미코토 (0 = 미코토 1, 1 = 미코토 2)
-  focusedIndex: 0,      // 키보드/드래그로 움직이는 카드 위치 (GODDESSES 배열 인덱스)
-  isDragging: false,    // 마우스 클릭한 채로 드래그 중인지
+  focusedIndex: 0,      // 방향키로 움직이는 카드 위치 (GODDESSES 배열 인덱스)
   introPlayed: false,   // "쌍장요란" 타이틀 중앙->좌상단 애니메이션을 한 번 재생했는지
+
+  // 화면(카드 목록)을 손으로 드래그해서 스크롤하는 것 관련 상태
+  isPanning: false,      // 지금 마우스 누른 채로 드래그 중인지
+  dragMoved: false,      // 이번 드래그가 실제로 움직였는지 (클릭과 구분하기 위함)
+  dragStartX: 0,         // 드래그 시작 시점의 마우스 x좌표
+  dragStartOffset: 0,    // 드래그 시작 시점의 카드 목록 위치(translateX)
 };
