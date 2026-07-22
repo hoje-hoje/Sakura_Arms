@@ -32,6 +32,8 @@ function advanceSsangjangYoran() {
     ssangjangUI.focusedIndex = 0;
     render();
   } else {
+    ssangjangBGM.pause();
+    ssangjangBGM.currentTime = 0;
     gameState.phase = PHASE.ANJEON_GUCHUK;
     render();
   }
