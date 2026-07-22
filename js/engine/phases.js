@@ -34,17 +34,46 @@ function advanceSsangjangYoran() {
   } else {
     ssangjangBGM.pause();
     ssangjangBGM.currentTime = 0;
+    anjeonUI.activePlayerIndex = 0;
+    anjeonUI.selectedNormal = [];
+    anjeonUI.selectedSpecial = [];
     gameState.phase = PHASE.ANJEON_GUCHUK;
     render();
   }
 }
 
 // 2. 안전구축: 통상패 7장, 비장패 3장 선택
-// TODO: 선택한 두 여신의 카드 풀에서 통상패7/비장패3 고르는 UI/로직
-function confirmAnjeonGuchuk() {
-  // 임시: 카드 선택 검증 없이 다음 단계로 (실제 로직은 추후 구현)
-  gameState.phase = PHASE.BEOTKKOT_GYEOLTU;
+// 카드 클릭 -> 선택/해제 (통상패 7장, 비장패 3장 넘으면 무시)
+function toggleAnjeonCard(card) {
+  const key = card.kind === "통상패" ? "selectedNormal" : "selectedSpecial";
+  const max = card.kind === "통상패" ? 7 : 3;
+  const list = anjeonUI[key];
+  const idx = list.findIndex((c) => c.goddess === card.goddess && c.id === card.id);
+  if (idx >= 0) {
+    list.splice(idx, 1);
+  } else if (list.length < max) {
+    list.push(card);
+  }
   render();
+}
+
+// "구축 완료 ->" 버튼: 현재 미코토의 덱 확정 후 다음 미코토로, 마지막이면 벚꽃결투로
+function confirmAnjeonGuchuk() {
+  if (anjeonUI.selectedNormal.length !== 7 || anjeonUI.selectedSpecial.length !== 3) return;
+
+  const player = gameState.players[anjeonUI.activePlayerIndex];
+  player.normalDeck = anjeonUI.selectedNormal;
+  player.specialDeck = anjeonUI.selectedSpecial;
+
+  if (anjeonUI.activePlayerIndex < gameState.players.length - 1) {
+    anjeonUI.activePlayerIndex++;
+    anjeonUI.selectedNormal = [];
+    anjeonUI.selectedSpecial = [];
+    render();
+  } else {
+    gameState.phase = PHASE.BEOTKKOT_GYEOLTU;
+    render();
+  }
 }
 
 // 3. 벚꽃결투: 실제 대결
