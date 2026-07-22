@@ -171,6 +171,29 @@
     flex-direction: column;
   }
 
+  #editor-wrap {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    overflow: hidden;
+  }
+
+  #line-numbers {
+    flex-shrink: 0;
+    width: 48px;
+    padding: 20px 8px 20px 0;
+    box-sizing: border-box;
+    background: var(--bg);
+    color: var(--muted);
+    font-family: "Consolas", "Monaco", monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    text-align: right;
+    overflow: hidden;
+    user-select: none;
+    border-right: 1px solid var(--border);
+  }
+
   #editor {
     flex: 1;
     width: 100%;
@@ -412,15 +435,40 @@
       isDirty = false;
 
       container.innerHTML = "";
+
+      const wrap = document.createElement("div");
+      wrap.id = "editor-wrap";
+
+      const lineNumbers = document.createElement("div");
+      lineNumbers.id = "line-numbers";
+
       const textarea = document.createElement("textarea");
       textarea.id = "editor";
       textarea.value = content;
       textarea.spellcheck = false;
+
+      function updateLineNumbers() {
+        const lineCount = textarea.value.split("\n").length;
+        let nums = "";
+        for (let i = 1; i <= lineCount; i++) nums += i + "\n";
+        lineNumbers.textContent = nums;
+      }
+
       textarea.oninput = () => {
         isDirty = true;
         document.querySelector(`.file-item[data-path="${fileInfo.path}"]`).classList.add("dirty");
+        updateLineNumbers();
       };
-      container.appendChild(textarea);
+      // 텍스트 스크롤할 때 줄 번호도 같이 스크롤되게
+      textarea.onscroll = () => {
+        lineNumbers.scrollTop = textarea.scrollTop;
+      };
+
+      wrap.appendChild(lineNumbers);
+      wrap.appendChild(textarea);
+      container.appendChild(wrap);
+      updateLineNumbers();
+
       document.getElementById("save-btn").disabled = false;
     } catch (e) {
       container.innerHTML = `<div id="empty-state" style="color:var(--red)">${e.message}</div>`;
