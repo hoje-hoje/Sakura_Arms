@@ -5,6 +5,11 @@
 
 function render() {
   const app = document.getElementById("app");
+
+  // 스크롤 위치가 확 튀는 걸 막기 위해, 다시 그리기 전에 현재 스크롤 위치를 저장해둠
+  const existingWrap = document.getElementById("grid-wrap");
+  if (existingWrap) ssangjangUI.lastScrollTop = existingWrap.scrollTop;
+
   app.innerHTML = "";
 
   // 화면 전환마다 중복 등록되지 않도록 항상 먼저 해제
@@ -16,6 +21,11 @@ function render() {
       break;
     case PHASE.SSANGJANG_YORAN:
       app.appendChild(renderSsangjangYoran());
+
+      // 저장해둔 스크롤 위치를 애니메이션 없이 즉시 복원 (맨 위로 튀었다가 내려오는 현상 방지)
+      const newWrap = document.getElementById("grid-wrap");
+      if (newWrap) newWrap.scrollTop = ssangjangUI.lastScrollTop || 0;
+
       // 화면에 실제로 붙은 뒤에 실행해야 요소를 찾을 수 있어서 여기서 호출함
       updatePreviewPanel();
       applyScreenGlow(ssangjangUI.focusedIndex);
@@ -42,8 +52,6 @@ function renderHome() {
   `;
   el.appendChild(createSakuraPetals());
   el.querySelector("#start-btn").onclick = () => {
-    // TODO(온라인 전환 시): 여기서 바로 쌍장요란으로 넘어가지 않고
-    // "방 만들기 / 입장하기" 화면을 먼저 보여주도록 교체하면 됨.
     gameState.phase = PHASE.SSANGJANG_YORAN;
     render();
   };
@@ -101,6 +109,25 @@ function renderSsangjangYoran() {
   const activePlayer = gameState.players[ssangjangUI.activePlayerIndex];
   const selectedCount = activePlayer.goddesses.length;
 
+  // 선택 슬롯(2칸) HTML - 이미지 있으면 이미지, 없으면 이모지, 빈 칸이면 번호만
+  const slotsHTML = [0, 1].map((i) => {
+    const sel = activePlayer.goddesses[i];
+    if (sel && sel.image) {
+      return `
+        <div class="selected-slot filled">
+          <img src="${sel.image}" alt="${sel.name}">
+          <div class="selected-slot-label">${sel.name}</div>
+        </div>`;
+    } else if (sel) {
+      return `
+        <div class="selected-slot filled emoji">
+          <div class="selected-slot-emoji">${sel.thumbEmoji || "🌸"}</div>
+          <div class="selected-slot-label">${sel.name}</div>
+        </div>`;
+    }
+    return `<div class="selected-slot empty"><span>${i + 1}</span></div>`;
+  }).join("");
+
   el.innerHTML = `
     <img class="ssangjang-bg" src="assets/ui/ssangjang-bg.jpg" alt="">
     <div class="ssangjang-white-overlay ${ssangjangUI.introPlayed ? "intro-done" : ""}" id="overlay"></div>
@@ -109,6 +136,9 @@ function renderSsangjangYoran() {
     <div class="ssangjang-hud">
       <div class="mikoto-label">미코토 ${ssangjangUI.activePlayerIndex + 1} 선택</div>
       <div class="selection-count">여신선택(${selectedCount}/2)</div>
+      <div class="selected-slots" id="selected-slots">
+        ${slotsHTML}
+      </div>
     </div>
 
     <div class="focus-preview" id="focus-preview">
@@ -165,9 +195,7 @@ function renderSsangjangYoran() {
 
     box.addEventListener("click", () => {
       ssangjangUI.focusedIndex = index;
-      const wasSelected = !!activePlayer.goddesses.find((sel) => sel.id === g.id);
-      toggleGoddessSelection(ssangjangUI.activePlayerIndex, g.id);
-      if (!wasSelected) playSelectionFlash(g);
+      selectGoddessAt(index);
     });
 
     grid.appendChild(box);
@@ -176,6 +204,18 @@ function renderSsangjangYoran() {
   el.querySelector("#next-btn").onclick = advanceSsangjangYoran;
 
   return el;
+}
+
+// 여신 선택 처리 + "이미 2개 선택된 상태에서 새 여신 클릭"일 땐 플래시 효과 안 뜨게 함
+function selectGoddessAt(index) {
+  const g = GODDESSES[index];
+  const activePlayer = gameState.players[ssangjangUI.activePlayerIndex];
+  const wasSelected = !!activePlayer.goddesses.find((sel) => sel.id === g.id);
+  const willActuallySelect = !wasSelected && activePlayer.goddesses.length < 2;
+
+  toggleGoddessSelection(ssangjangUI.activePlayerIndex, g.id);
+
+  if (willActuallySelect) playSelectionFlash(g);
 }
 
 function getSsangjangGridColumnCount() {
@@ -213,11 +253,7 @@ function handleSsangjangKeydown(e) {
   } else if (e.key === "ArrowUp") {
     ssangjangUI.focusedIndex = Math.max(ssangjangUI.focusedIndex - cols, 0);
   } else if (e.key === "Enter") {
-    const g = GODDESSES[ssangjangUI.focusedIndex];
-    const activePlayer = gameState.players[ssangjangUI.activePlayerIndex];
-    const wasSelected = !!activePlayer.goddesses.find((sel) => sel.id === g.id);
-    toggleGoddessSelection(ssangjangUI.activePlayerIndex, g.id);
-    if (!wasSelected) playSelectionFlash(g);
+    selectGoddessAt(ssangjangUI.focusedIndex);
     return;
   } else {
     return;
@@ -292,7 +328,6 @@ function updatePreviewPanel() {
     img.src = g.image;
     img.alt = g.name;
   } else {
-    // 이미지 없는(테스트) 여신은 이모지를 크게 표시
     clip.style.display = "flex";
     img.style.display = "none";
     clip.textContent = g.thumbEmoji || "🌸";
