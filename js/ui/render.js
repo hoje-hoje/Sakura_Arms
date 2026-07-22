@@ -133,6 +133,10 @@ function renderSsangjangYoran() {
   }
 
   const track = el.querySelector("#track");
+  // 화면이 다시 그려져도 카드 목록이 "이어서" 움직이는 것처럼 보이게, 마지막 위치를 그대로 시작점으로 잡아둠
+  track.classList.add("no-transition");
+  track.style.transform = `translateX(${ssangjangUI.lastOffset}px)`;
+
   GODDESSES.forEach((g, index) => {
     const item = document.createElement("div");
     item.className = "select-item";
