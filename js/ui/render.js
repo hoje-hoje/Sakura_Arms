@@ -3,6 +3,20 @@
 // gameState.phase에 따라 다른 화면을 그립니다.
 // ============================================
 
+// 같은 여신 계열(기본 + 어나더들)을 구분하는 키
+// baseId가 있으면 그 값, 없으면(기본형이면) 자기 자신의 id를 계열 키로 사용
+function getFamilyId(goddess) {
+  return goddess.baseId || goddess.id;
+}
+
+// 이 플레이어가 이미 이 여신과 같은 계열(다른 버전)을 선택해뒀는지 확인
+function hasFamilyConflict(player, goddess) {
+  const fam = getFamilyId(goddess);
+  return player.goddesses.some(
+    (sel) => sel.id !== goddess.id && getFamilyId(sel) === fam
+  );
+}
+
 function render() {
   const app = document.getElementById("app");
 
@@ -174,8 +188,14 @@ function renderSsangjangYoran() {
   GODDESSES.forEach((g, index) => {
     const box = document.createElement("div");
     box.className = "grid-box";
+
+    const isSelected = !!activePlayer.goddesses.find((sel) => sel.id === g.id);
+    // 이미 같은 계열(같은 여신의 다른 버전)이 선택되어 있으면, 자기 자신이 아닌 이상 비활성화
+    const isDisabled = !isSelected && hasFamilyConflict(activePlayer, g);
+
     if (index === ssangjangUI.focusedIndex) box.classList.add("focused");
-    if (activePlayer.goddesses.find((sel) => sel.id === g.id)) box.classList.add("selected");
+    if (isSelected) box.classList.add("selected");
+    if (isDisabled) box.classList.add("disabled");
 
     const visual = g.image
       ? `<img class="grid-box-image" src="${g.image}" alt="${g.name}">`
@@ -207,11 +227,19 @@ function renderSsangjangYoran() {
   return el;
 }
 
-// 여신 선택 처리 + "이미 2개 선택된 상태에서 새 여신 클릭"일 땐 플래시 효과 안 뜨게 함
+// 여신 선택 처리
+// - 이미 2개 선택된 상태에서 새 여신 클릭 -> 무시 (플래시 없음)
+// - 같은 계열(같은 여신의 다른 버전)이 이미 선택되어 있는데 다른 버전 클릭 -> 무시 (플래시 없음)
 function selectGoddessAt(index) {
   const g = GODDESSES[index];
   const activePlayer = gameState.players[ssangjangUI.activePlayerIndex];
   const wasSelected = !!activePlayer.goddesses.find((sel) => sel.id === g.id);
+
+  if (!wasSelected && hasFamilyConflict(activePlayer, g)) {
+    // 같은 여신의 다른 버전이 이미 선택되어 있음 -> 아무 동작도 하지 않음
+    return;
+  }
+
   const willActuallySelect = !wasSelected && activePlayer.goddesses.length < 2;
 
   toggleGoddessSelection(ssangjangUI.activePlayerIndex, g.id);
@@ -280,7 +308,7 @@ function boostSaturation(r, g, b, boost) {
     }
     h /= 6;
   }
-  s = Math.min(1, s * boost); // 채도 부스트
+  s = Math.min(1, s * boost);
 
   const hue2rgb = (p, q, t) => {
     if (t < 0) t += 1;
@@ -314,7 +342,7 @@ function extractDominantColor(imgEl) {
     const data = ctx.getImageData(0, 0, size, size).data;
     let r = 0, g = 0, b = 0, count = 0;
     for (let i = 0; i < data.length; i += 4) {
-      if (data[i + 3] < 128) continue; // 투명 픽셀 제외
+      if (data[i + 3] < 128) continue;
       r += data[i];
       g += data[i + 1];
       b += data[i + 2];
@@ -322,9 +350,9 @@ function extractDominantColor(imgEl) {
     }
     if (count === 0) return "rgba(232,143,176,0.45)";
     const [br, bg, bb] = boostSaturation(r / count, g / count, b / count, 1.35);
-    return `rgba(${br},${bg},${bb},0.45)`; // 알파를 넣어서 은은하게
+    return `rgba(${br},${bg},${bb},0.45)`;
   } catch (e) {
-    return "rgba(232,143,176,0.45)"; // 이미지 로딩/CORS 문제 시 기본색
+    return "rgba(232,143,176,0.45)";
   }
 }
 
@@ -384,7 +412,7 @@ function playSelectionFlash(goddess) {
 
   img.src = goddess.image;
   flash.classList.remove("active");
-  void flash.offsetWidth; // 강제 리플로우 -> 애니메이션 재시작 가능하게
+  void flash.offsetWidth;
   flash.classList.add("active");
 }
 
