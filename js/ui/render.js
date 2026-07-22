@@ -225,6 +225,13 @@ function renderSsangjangYoran() {
 
   el.querySelector("#next-btn").onclick = advanceSsangjangYoran;
   el.querySelector("#home-btn").onclick = () => {
+    gameState.players.forEach((p) => { p.goddesses = []; });
+    ssangjangUI.activePlayerIndex = 0;
+    ssangjangUI.focusedIndex = 0;
+    ssangjangUI.introPlayed = false;
+    ssangjangUI.isPanning = false;
+    ssangjangUI.dragMoved = false;
+    ssangjangUI.lastOffset = 0;
     gameState.phase = PHASE.HOME;
     render();
   };
