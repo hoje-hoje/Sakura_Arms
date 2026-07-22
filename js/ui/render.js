@@ -16,7 +16,7 @@ function render() {
       // 화면에 실제로 붙은 뒤에 실행해야 요소를 찾을 수 있어서 여기서 호출함
       updatePreviewPanel();
       applyScreenGlow(ssangjangUI.focusedIndex);
-      centerFocusedCard();
+      scrollFocusedIntoView();
       break;
     case PHASE.ANJEON_GUCHUK:
       app.appendChild(renderAnjeonGuchuk());
@@ -114,13 +114,12 @@ function renderSsangjangYoran() {
       <div class="focus-preview-name" id="preview-name"></div>
     </div>
 
-    <div class="goddess-track-wrap" id="track-wrap">
-      <div class="goddess-track" id="track"></div>
+    <div class="goddess-grid-wrap" id="grid-wrap">
+      <div class="goddess-grid" id="grid"></div>
     </div>
     <button class="next-btn" id="next-btn" ${selectedCount < 2 ? "disabled" : ""}>다음 -></button>
   `;
 
-  // 타이틀 인트로 애니메이션은 처음 들어왔을 때 한 번만 재생
   const overlay = el.querySelector("#overlay");
   if (!ssangjangUI.introPlayed) {
     overlay.addEventListener(
@@ -132,157 +131,85 @@ function renderSsangjangYoran() {
     );
   }
 
-  const track = el.querySelector("#track");
-  // 화면이 다시 그려져도 카드 목록이 "이어서" 움직이는 것처럼 보이게, 마지막 위치를 그대로 시작점으로 잡아둠
-  track.classList.add("no-transition");
-  track.style.transform = `translateX(${ssangjangUI.lastOffset}px)`;
-
+  const grid = el.querySelector("#grid");
   GODDESSES.forEach((g, index) => {
-    const item = document.createElement("div");
-    item.className = "select-item";
-
-    const card = document.createElement("div");
-    card.className = "select-card";
-    if (index === ssangjangUI.focusedIndex) card.classList.add("focused");
-    if (activePlayer.goddesses.find((sel) => sel.id === g.id)) card.classList.add("selected");
+    const box = document.createElement("div");
+    box.className = "grid-box";
+    if (index === ssangjangUI.focusedIndex) box.classList.add("focused");
+    if (activePlayer.goddesses.find((sel) => sel.id === g.id)) box.classList.add("selected");
 
     const visual = g.image
-      ? `<img class="select-card-image" src="${g.image}" alt="${g.name}">`
-      : `<div class="select-thumb">${g.thumbEmoji || "🌸"}</div>`;
+      ? `<img class="grid-box-image" src="${g.image}" alt="${g.name}">`
+      : `<div class="grid-box-thumb">${g.thumbEmoji || "🌸"}</div>`;
 
-    card.innerHTML = `<span class="select-mark"></span>${visual}`;
+    box.innerHTML = `
+      <span class="grid-box-mark"></span>
+      ${visual}
+      <div class="grid-box-name">${g.name}</div>
+    `;
 
     if (g.image) {
-      const img = card.querySelector(".select-card-image");
+      const img = box.querySelector(".grid-box-image");
       ensureDominantColor(img, g.id, () => {
         if (index === ssangjangUI.focusedIndex) applyScreenGlow(ssangjangUI.focusedIndex);
       });
     }
 
-    // 클릭 = 바로 선택/취소 (드래그 중이었으면 무시)
-    card.addEventListener("click", () => {
-      if (ssangjangUI.dragMoved) return;
+    box.addEventListener("click", () => {
       ssangjangUI.focusedIndex = index;
       toggleGoddessSelection(ssangjangUI.activePlayerIndex, g.id);
     });
 
-    const name = document.createElement("div");
-    name.className = "select-name";
-    name.textContent = g.name;
-
-    item.appendChild(card);
-    item.appendChild(name);
-    track.appendChild(item);
+    grid.appendChild(box);
   });
 
   el.querySelector("#next-btn").onclick = advanceSsangjangYoran;
 
-  // 화면(카드 목록)을 손으로 드래그해서 스크롤 시작
-  const trackWrap = el.querySelector("#track-wrap");
-  trackWrap.addEventListener("mousedown", (e) => {
-    ssangjangUI.isPanning = true;
-    ssangjangUI.dragMoved = false;
-    ssangjangUI.dragStartX = e.clientX;
-    ssangjangUI.dragStartOffset = currentTrackTranslateX(track);
-    track.classList.add("no-transition");
-    trackWrap.classList.add("panning");
-  });
-
   return el;
 }
 
-// 현재 카드 목록(track)이 얼마나 이동해있는지(translateX 값) 읽기
-function currentTrackTranslateX(trackEl) {
-  const track = trackEl || document.getElementById("track");
-  if (!track) return 0;
-  const matrix = new DOMMatrixReadOnly(window.getComputedStyle(track).transform);
-  return matrix.m41;
-}
-
-// 포커스된 카드가 화면 중앙에 오도록 카드 목록 전체를 이동
-function centerFocusedCard() {
-  const wrap = document.getElementById("track-wrap");
-  const track = document.getElementById("track");
-  if (!wrap || !track) return;
-  const items = track.querySelectorAll(".select-item");
-  const focusedItem = items[ssangjangUI.focusedIndex];
-  if (!focusedItem) return;
-  const wrapWidth = wrap.clientWidth;
-  const cardCenter = focusedItem.offsetLeft + focusedItem.offsetWidth / 2;
-  const offset = wrapWidth / 2 - cardCenter;
-
-  // 강제로 한 번 렌더링시킨 다음 트랜지션을 켜야, 방금 잡아둔 시작 위치에서 목표 위치까지 제대로 슬라이드됨
-  void track.offsetWidth;
-  track.classList.remove("no-transition");
-  track.style.transform = `translateX(${offset}px)`;
-  ssangjangUI.lastOffset = offset;
-}
-
-// 드래그를 놓았을 때, 화면 중앙에 가장 가까운 카드로 스냅하며 그 카드를 포커스로 만듦
-function snapToNearestSsangjangCard() {
-  const wrap = document.getElementById("track-wrap");
-  const track = document.getElementById("track");
-  if (!wrap || !track) return;
-  const items = track.querySelectorAll(".select-item");
-  const wrapWidth = wrap.clientWidth;
-  const offset = currentTrackTranslateX(track);
-  let closestIndex = 0;
-  let closestDist = Infinity;
-  items.forEach((item, idx) => {
-    const itemCenter = item.offsetLeft + item.offsetWidth / 2 + offset;
-    const dist = Math.abs(itemCenter - wrapWidth / 2);
-    if (dist < closestDist) {
-      closestDist = dist;
-      closestIndex = idx;
-    }
-  });
-  ssangjangUI.focusedIndex = closestIndex;
-  render();
-}
-
-// main.js에서 document 전체에 딱 한 번만 등록해서 호출하는 함수들
-// (render()가 화면을 통째로 다시 그리기 때문에, 여기서 매번 새로 리스너를 등록하면 안 됨)
-function handleSsangjangMouseMove(e) {
-  if (!ssangjangUI.isPanning) return;
-  const track = document.getElementById("track");
-  if (!track) return;
-  const dx = e.clientX - ssangjangUI.dragStartX;
-  if (Math.abs(dx) > 4) ssangjangUI.dragMoved = true;
-  track.style.transform = `translateX(${ssangjangUI.dragStartOffset + dx}px)`;
-}
-
-function handleSsangjangMouseUp() {
-  if (!ssangjangUI.isPanning) return;
-  ssangjangUI.isPanning = false;
-  const wrap = document.getElementById("track-wrap");
-  const track = document.getElementById("track");
-  if (wrap) wrap.classList.remove("panning");
-  if (track) track.classList.remove("no-transition");
-
-  if (ssangjangUI.dragMoved) {
-    snapToNearestSsangjangCard();
-    // 뒤이어 발생하는 click 이벤트가 선택으로 이어지지 않도록 살짝 지연 후 해제
-    setTimeout(() => {
-      ssangjangUI.dragMoved = false;
-    }, 50);
+function getSsangjangGridColumnCount() {
+  const grid = document.getElementById("grid");
+  if (!grid) return 1;
+  const boxes = grid.querySelectorAll(".grid-box");
+  if (boxes.length === 0) return 1;
+  const firstTop = boxes[0].offsetTop;
+  let count = 0;
+  for (const b of boxes) {
+    if (b.offsetTop === firstTop) count++;
+    else break;
   }
+  return count || 1;
 }
 
-// 방향키 이동(main.js에서 이 화면일 때만 호출됨)
+function scrollFocusedIntoView() {
+  const grid = document.getElementById("grid");
+  if (!grid) return;
+  const box = grid.children[ssangjangUI.focusedIndex];
+  if (box) box.scrollIntoView({ block: "nearest", behavior: "smooth" });
+}
+
 function handleSsangjangKeydown(e) {
   if (GODDESSES.length === 0) return;
   const lastIndex = GODDESSES.length - 1;
+  const cols = getSsangjangGridColumnCount();
 
   if (e.key === "ArrowRight") {
     ssangjangUI.focusedIndex = Math.min(ssangjangUI.focusedIndex + 1, lastIndex);
-    render();
   } else if (e.key === "ArrowLeft") {
     ssangjangUI.focusedIndex = Math.max(ssangjangUI.focusedIndex - 1, 0);
-    render();
+  } else if (e.key === "ArrowDown") {
+    ssangjangUI.focusedIndex = Math.min(ssangjangUI.focusedIndex + cols, lastIndex);
+  } else if (e.key === "ArrowUp") {
+    ssangjangUI.focusedIndex = Math.max(ssangjangUI.focusedIndex - cols, 0);
   } else if (e.key === "Enter") {
     const g = GODDESSES[ssangjangUI.focusedIndex];
     toggleGoddessSelection(ssangjangUI.activePlayerIndex, g.id);
+    return;
+  } else {
+    return;
   }
+  render();
 }
 
 // ---- 여신 이미지 대표색 추출 (투명 픽셀은 제외하고 평균) ----
