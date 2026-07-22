@@ -270,6 +270,7 @@ function scrollFocusedIntoView() {
 
 function handleSsangjangKeydown(e) {
   if (GODDESSES.length === 0) return;
+  if (!ssangjangUI.introPlayed) return; // 인트로 재생 중엔 조작 무시 (재시작 버그 방지)
   const lastIndex = GODDESSES.length - 1;
   const cols = getSsangjangGridColumnCount();
 
