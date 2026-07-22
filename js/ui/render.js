@@ -468,16 +468,81 @@ function playSelectionFlash(goddess) {
 
 function renderAnjeonGuchuk() {
   const el = document.createElement("div");
-  el.className = "screen";
+  el.className = "anjeon-screen";
+
+  const player = gameState.players[anjeonUI.activePlayerIndex];
+  const pools = player.goddesses.map((g) => getGoddessCardPool(g));
+  const combinedNormal = pools.flatMap((p) => p.normal);
+  const combinedSpecial = pools.flatMap((p) => p.special);
+
+  const normalCount = anjeonUI.selectedNormal.length;
+  const specialCount = anjeonUI.selectedSpecial.length;
+  const canConfirm = normalCount === 7 && specialCount === 3;
+
   el.innerHTML = `
-    <div class="panel">
-      <h2>안전구축</h2>
-      <p>TODO: 선택한 여신의 통상패/비장패 목록에서 통상패 7장, 비장패 3장을 고르는 UI</p>
-      <button id="confirm-btn">구축 완료 -> 벚꽃결투</button>
+    <div class="anjeon-header">
+      <div class="anjeon-title">미코토 ${anjeonUI.activePlayerIndex + 1} 안전구축</div>
+      <div class="anjeon-goddess-names">${player.goddesses.map((g) => g.name).join(" / ")}</div>
+      <div class="anjeon-counters">
+        <span class="anjeon-counter ${normalCount === 7 ? "done" : ""}">통상패 ${normalCount}/7</span>
+        <span class="anjeon-counter ${specialCount === 3 ? "done" : ""}">비장패 ${specialCount}/3</span>
+      </div>
     </div>
+    <div class="anjeon-section-title">통상패</div>
+    <div class="anjeon-grid" id="anjeon-normal-grid"></div>
+    <div class="anjeon-section-title">비장패</div>
+    <div class="anjeon-grid" id="anjeon-special-grid"></div>
+    <button class="next-btn" id="anjeon-confirm-btn" ${canConfirm ? "" : "disabled"}>구축 완료 -></button>
+    <button class="home-btn" id="anjeon-home-btn">홈으로</button>
   `;
-  el.querySelector("#confirm-btn").onclick = confirmAnjeonGuchuk;
+
+  el.querySelector("#anjeon-normal-grid").append(...combinedNormal.map(anjeonCardTile));
+  el.querySelector("#anjeon-special-grid").append(...combinedSpecial.map(anjeonCardTile));
+
+  el.querySelector("#anjeon-confirm-btn").onclick = confirmAnjeonGuchuk;
+  el.querySelector("#anjeon-home-btn").onclick = () => {
+    gameState.players.forEach((p) => {
+      p.goddesses = [];
+      p.normalDeck = [];
+      p.specialDeck = [];
+    });
+    ssangjangUI.activePlayerIndex = 0;
+    ssangjangUI.focusedIndex = 0;
+    ssangjangUI.introPlayed = false;
+    anjeonUI.activePlayerIndex = 0;
+    anjeonUI.selectedNormal = [];
+    anjeonUI.selectedSpecial = [];
+    gameState.phase = PHASE.HOME;
+    render();
+  };
+
   return el;
+}
+
+function anjeonCardTile(card) {
+  const tile = document.createElement("div");
+  tile.className = "anjeon-card";
+
+  const listName = card.kind === "통상패" ? "selectedNormal" : "selectedSpecial";
+  const max = card.kind === "통상패" ? 7 : 3;
+  const isSelected = anjeonUI[listName].some((c) => c.goddess === card.goddess && c.id === card.id);
+  const maxReached = anjeonUI[listName].length >= max;
+
+  if (isSelected) tile.classList.add("selected");
+  if (!isSelected && maxReached) tile.classList.add("disabled");
+
+  const visual = card.image
+    ? `<img class="anjeon-card-image" src="${card.image}" alt="${card.name}">`
+    : `<div class="anjeon-card-noimg">이미지 없음</div>`;
+
+  tile.innerHTML = `${visual}<div class="anjeon-card-name">${card.name}</div>`;
+
+  tile.addEventListener("click", () => {
+    if (!isSelected && maxReached) return;
+    toggleAnjeonCard(card);
+  });
+
+  return tile;
 }
 
 function renderBeotkkotGyeoltu() {
