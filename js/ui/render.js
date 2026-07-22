@@ -194,7 +194,9 @@ function renderSsangjangYoran() {
     "animationend",
     () => {
       ssangjangBGM.currentTime = 0;
-      ssangjangBGM.play().catch(() => {});
+      ssangjangBGM.play().catch((err) => {
+        console.error("브금 재생 실패:", err);
+      });
     },
     { once: true }
   );
