@@ -12,20 +12,4 @@ document.addEventListener("DOMContentLoaded", () => {
 //  매번 새로 붙이면 계속 쌓여서 중복 실행됨 -> 여기서 딱 한 번만 등록하고
 //  실제 처리 함수 안에서 "지금 이 화면일 때만 동작"하도록 분기함)
 // ============================================
-document.addEventListener("keydown", (e) => {
-  if (gameState.phase === PHASE.SSANGJANG_YORAN) {
-    handleSsangjangKeydown(e);
-  }
-});
 
-document.addEventListener("mousemove", (e) => {
-  if (gameState.phase === PHASE.SSANGJANG_YORAN) {
-    handleSsangjangMouseMove(e);
-  }
-});
-
-document.addEventListener("mouseup", () => {
-  if (gameState.phase === PHASE.SSANGJANG_YORAN) {
-    handleSsangjangMouseUp();
-  }
-});
