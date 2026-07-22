@@ -7,6 +7,9 @@ function render() {
   const app = document.getElementById("app");
   app.innerHTML = "";
 
+  // 화면 전환마다 중복 등록되지 않도록 항상 먼저 해제
+  document.removeEventListener("keydown", handleSsangjangKeydown);
+
   switch (gameState.phase) {
     case PHASE.HOME:
       app.appendChild(renderHome());
@@ -17,6 +20,7 @@ function render() {
       updatePreviewPanel();
       applyScreenGlow(ssangjangUI.focusedIndex);
       scrollFocusedIntoView();
+      document.addEventListener("keydown", handleSsangjangKeydown);
       break;
     case PHASE.ANJEON_GUCHUK:
       app.appendChild(renderAnjeonGuchuk());
@@ -114,6 +118,10 @@ function renderSsangjangYoran() {
       <div class="focus-preview-name" id="preview-name"></div>
     </div>
 
+    <div class="selection-flash" id="selection-flash">
+      <img id="selection-flash-img" src="" alt="">
+    </div>
+
     <div class="goddess-grid-wrap" id="grid-wrap">
       <div class="goddess-grid" id="grid"></div>
     </div>
@@ -157,7 +165,9 @@ function renderSsangjangYoran() {
 
     box.addEventListener("click", () => {
       ssangjangUI.focusedIndex = index;
+      const wasSelected = !!activePlayer.goddesses.find((sel) => sel.id === g.id);
       toggleGoddessSelection(ssangjangUI.activePlayerIndex, g.id);
+      if (!wasSelected) playSelectionFlash(g);
     });
 
     grid.appendChild(box);
@@ -204,7 +214,10 @@ function handleSsangjangKeydown(e) {
     ssangjangUI.focusedIndex = Math.max(ssangjangUI.focusedIndex - cols, 0);
   } else if (e.key === "Enter") {
     const g = GODDESSES[ssangjangUI.focusedIndex];
+    const activePlayer = gameState.players[ssangjangUI.activePlayerIndex];
+    const wasSelected = !!activePlayer.goddesses.find((sel) => sel.id === g.id);
     toggleGoddessSelection(ssangjangUI.activePlayerIndex, g.id);
+    if (!wasSelected) playSelectionFlash(g);
     return;
   } else {
     return;
@@ -287,6 +300,18 @@ function updatePreviewPanel() {
     clip.style.alignItems = "center";
     clip.style.justifyContent = "center";
   }
+}
+
+// 선택 시 큰 이미지가 잠깐 나타났다 사라지는 효과 (텍스트 없음)
+function playSelectionFlash(goddess) {
+  const flash = document.getElementById("selection-flash");
+  const img = document.getElementById("selection-flash-img");
+  if (!flash || !img || !goddess.image) return;
+
+  img.src = goddess.image;
+  flash.classList.remove("active");
+  void flash.offsetWidth; // 강제 리플로우 -> 애니메이션 재시작 가능하게
+  flash.classList.add("active");
 }
 
 function renderAnjeonGuchuk() {
