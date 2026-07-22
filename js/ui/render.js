@@ -142,19 +142,19 @@ function renderSsangjangYoran() {
       </div>
     </div>
 
-    <div class="focus-preview" id="focus-preview">
-      <div class="focus-preview-clip" id="preview-clip">
-        <img id="preview-image" src="" alt="">
+    <div class="ssangjang-content">
+      <div class="focus-preview" id="focus-preview">
+        <div class="focus-preview-clip" id="preview-clip">
+          <img id="preview-image" src="" alt="">
+        </div>
+        <div class="focus-preview-name" id="preview-name"></div>
       </div>
-      <div class="focus-preview-name" id="preview-name"></div>
+      <div class="goddess-grid-wrap" id="grid-wrap">
+        <div class="goddess-grid" id="grid"></div>
+      </div>
     </div>
-
     <div class="selection-flash" id="selection-flash">
       <img id="selection-flash-img" src="" alt="">
-    </div>
-
-    <div class="goddess-grid-wrap" id="grid-wrap">
-      <div class="goddess-grid" id="grid"></div>
     </div>
     <button class="next-btn" id="next-btn" ${selectedCount < 2 ? "disabled" : ""}>다음 -></button>
   `;
