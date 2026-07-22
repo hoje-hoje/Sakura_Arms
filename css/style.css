@@ -151,6 +151,14 @@ button:hover { opacity: 0.85; }
   z-index: 0;
 }
 
+.ssangjang-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  transition: box-shadow 0.3s ease;
+}
+
 .ssangjang-white-overlay {
   position: absolute;
   inset: 0;
