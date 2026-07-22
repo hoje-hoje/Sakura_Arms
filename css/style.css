@@ -317,7 +317,6 @@ button:hover { opacity: 0.85; }
   justify-content: center;
 }
 .focus-preview-clip img {
-  max-width: 100%;
   height: 100%;
   width: auto;
   display: block;
