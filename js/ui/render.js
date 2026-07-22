@@ -263,6 +263,46 @@ function handleSsangjangKeydown(e) {
 }
 
 // ---- 여신 이미지 대표색 추출 (투명 픽셀은 제외하고 평균) ----
+// RGB -> HSL -> RGB 변환 (채도만 살짝 올리기 위함)
+function boostSaturation(r, g, b, boost) {
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h, s, l = (max + min) / 2;
+  if (max === min) {
+    h = s = 0;
+  } else {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: h = (b - r) / d + 2; break;
+      default: h = (r - g) / d + 4;
+    }
+    h /= 6;
+  }
+  s = Math.min(1, s * boost); // 채도 부스트
+
+  const hue2rgb = (p, q, t) => {
+    if (t < 0) t += 1;
+    if (t > 1) t -= 1;
+    if (t < 1 / 6) return p + (q - p) * 6 * t;
+    if (t < 1 / 2) return q;
+    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+    return p;
+  };
+  let nr, ng, nb;
+  if (s === 0) {
+    nr = ng = nb = l;
+  } else {
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    nr = hue2rgb(p, q, h + 1 / 3);
+    ng = hue2rgb(p, q, h);
+    nb = hue2rgb(p, q, h - 1 / 3);
+  }
+  return [Math.round(nr * 255), Math.round(ng * 255), Math.round(nb * 255)];
+}
+
 function extractDominantColor(imgEl) {
   try {
     const size = 32;
@@ -280,10 +320,11 @@ function extractDominantColor(imgEl) {
       b += data[i + 2];
       count++;
     }
-    if (count === 0) return "rgba(232,143,176,0.5)";
-    return `rgb(${Math.round(r / count)},${Math.round(g / count)},${Math.round(b / count)})`;
+    if (count === 0) return "rgba(232,143,176,0.45)";
+    const [br, bg, bb] = boostSaturation(r / count, g / count, b / count, 1.35);
+    return `rgba(${br},${bg},${bb},0.45)`; // 알파를 넣어서 은은하게
   } catch (e) {
-    return "rgba(232,143,176,0.5)"; // 이미지 로딩/CORS 문제 시 기본색
+    return "rgba(232,143,176,0.45)"; // 이미지 로딩/CORS 문제 시 기본색
   }
 }
 
