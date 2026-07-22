@@ -45,360 +45,8 @@ button {
 
 button:hover { opacity: 0.85; }
 
-.goddess-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: 10px;
-}
-
-.goddess-card {
-  background: var(--card-bg);
-  color: #1a1420;
-  border-radius: 8px;
-  padding: 8px;
-  text-align: center;
-  cursor: pointer;
-  border: 3px solid transparent;
-}
-
-.goddess-card.selected {
-  border-color: var(--accent);
-}
-
 /* ============================================
-   홈 화면 (타이틀 이미지 배경 + 오른쪽 시작 버튼)
-   파일: assets/ui/title-logo.png
-   ============================================ */
-.home-screen {
-  position: fixed;
-  inset: 0;
-  background-image: url("assets/ui/title-logo.png");
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding-right: 8%;
-}
-
-.home-action-panel {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-}
-
-.home-start-btn {
-  font-size: 20px;
-  padding: 16px 52px;
-  border-radius: 999px;
-  background: var(--accent);
-  color: #2a2130;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.25);
-  transition: transform 0.15s;
-}
-
-.home-start-btn:hover {
-  transform: scale(1.05);
-}
-
-.home-sub-text {
-  color: #6a5560;
-  font-size: 13px;
-  max-width: 220px;
-  text-align: center;
-  margin: 0;
-}
-
-@media (max-width: 700px) {
-  .home-screen {
-    justify-content: center;
-    padding-right: 0;
-    padding-bottom: 10%;
-    align-items: flex-end;
-  }
-}
-
-/* ============================================
-   쌍장요란 화면 (여신 선택)
-   배경/타이틀 이미지 파일 경로:
-   - assets/ui/ssangjang-bg.jpg   (배경 사진)
-   - assets/ui/ssangjang-title.png (쌍장요란 글자 이미지)
-   ============================================ */
-.ssangjang-screen {
-  position: fixed;
-  inset: 0;
-  overflow: hidden;
-  transition: box-shadow 0.3s ease; /* 화면 가장자리 글로우가 부드럽게 바뀌도록 */
-}
-
-.ssangjang-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 0;
-}
-
-/* 인트로 중(처음 4초+전환) 배경을 흰색으로 덮어뒀다가 서서히 사라지며 뒷배경을 드러냄 */
-.ssangjang-white-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 4;
-  background: #ffffff;
-  animation: ssangjang-overlay-fade 5.2s ease forwards;
-}
-
-.ssangjang-white-overlay.intro-done {
-  animation: none;
-  opacity: 0;
-  pointer-events: none;
-}
-
-@keyframes ssangjang-overlay-fade {
-  0% { opacity: 1; }
-  81% { opacity: 1; }
-  100% { opacity: 0; }
-}
-
-.ssangjang-title {
-  position: absolute;
-  z-index: 5;
-  top: 50%;
-  left: 50%;
-  height: 90px;
-  transform: translate(-50%, -50%) scale(2.2); /* 인트로 중엔 최종 크기의 4배 */
-  opacity: 0;
-  animation: ssangjang-title-move 5.2s ease forwards;
-}
-
-.ssangjang-title.intro-done {
-  animation: none;
-  top: 28px;
-  left: 28px;
-  transform: translate(0, 0) scale(0.55);
-  opacity: 1;
-}
-
-@keyframes ssangjang-title-move {
-  0% {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(2.2);
-    opacity: 0;
-  }
-  4% {
-    opacity: 1;
-  }
-  81% {
-    /* 여기까지 약 4초간 화면 중앙에 크게 정지 */
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(2.2);
-    opacity: 1;
-  }
-  100% {
-    top: 28px;
-    left: 28px;
-    transform: translate(0, 0) scale(0.55);
-    opacity: 1;
-  }
-}
-
-.ssangjang-hud {
-  position: absolute;
-  top: 28px;
-  right: 32px;
-  z-index: 3;
-  text-align: right;
-  color: white;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-}
-
-.mikoto-label {
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.selection-count {
-  font-size: 14px;
-  margin-top: 4px;
-  color: #f0d5df;
-}
-
-/* ============================================
-   왼쪽 큰 미리보기 - 포커스된 여신을 항상 반영 (선택 여부 무관)
-   박스/테두리 없이 이미지만, 상단 약 60%만 보이도록 프레임 비율을 잡아둠
-   ============================================ */
-.focus-preview {
-  position: absolute;
-  left: 50px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 3; /* 카드 목록보다 항상 위 레이어 */
-  width: 380px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  pointer-events: none;
-}
-
-.focus-preview-clip {
-  width: 100%;
-  aspect-ratio: 3 / 4; /* 전신 이미지 기준 상단 약 60% 노출 근사치 - 실제 이미지 넣고 미세조정 필요 */
-  overflow: hidden;
-}
-
-.focus-preview-clip img {
-  width: 100%;
-  height: auto;
-  display: block;
-  object-position: top;
-}
-
-.focus-preview-name {
-  color: white;
-  font-size: 26px;
-  font-weight: 900;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
-}
-
-/* ============================================
-   가로 한 줄 캐러셀 - 화살표로 포커스 이동, 손으로 드래그해서 스크롤 가능
-   ============================================ */
-.goddess-track-wrap {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  display: flex;
-  align-items: flex-end;
-  overflow: hidden;
-  padding-bottom: 140px;
-  padding-left: 460px; /* 왼쪽 미리보기 패널과 안 겹치게 */
-  cursor: grab;
-  user-select: none;
-}
-
-.goddess-track-wrap.panning {
-  cursor: grabbing;
-}
-
-.goddess-track {
-  display: flex;
-  align-items: flex-end;
-  gap: 30px;
-  transition: transform 0.55s ease;
-  will-change: transform;
-  padding: 0 20px;
-}
-
-.goddess-track.no-transition {
-  transition: none; /* 드래그로 손으로 움직이는 동안엔 애니메이션 끔 */
-}
-
-.select-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
-}
-
-.select-card {
-  position: relative;
-  width: 220px;
-  height: 320px;
-  background: rgba(20, 14, 24, 0.6);
-  border: 2px solid transparent;
-  border-radius: 10px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease;
-}
-
-/* 화살표로 포커스가 오면: 은은한 분홍 테두리 + 배경, 다른 카드보다 앞 레이어로 */
-.select-card.focused {
-  border-color: var(--accent);
-  background: rgba(232, 143, 176, 0.18);
-  z-index: 2;
-}
-
-/* 확정 선택된 카드는 흰 테두리로 표시 (포커스 여부와 별개로 계속 유지됨) */
-.select-card.selected {
-  box-shadow: 0 0 0 4px #ffffff;
-}
-
-.select-card.selected .select-mark {
-  background: var(--accent);
-  border-color: var(--accent);
-}
-
-.select-mark {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  z-index: 1;
-  width: 14px;
-  height: 14px;
-  border: 2px solid #ffffffaa;
-  border-radius: 3px;
-  background: transparent;
-}
-
-/* 여신 이미지 (image 필드가 있을 때) - 전신이 안 잘리게 보이도록 */
-.select-card-image {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-/* 아직 이미지 없는(테스트) 여신용 임시 이모지 표시 */
-.select-thumb {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 60px;
-}
-
-.select-name {
-  color: white;
-  font-size: 15px;
-  font-weight: bold;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
-}
-
-.next-btn {
-  position: absolute;
-  bottom: 28px;
-  right: 32px;
-  z-index: 3;
-  padding: 12px 32px;
-  border-radius: 999px;
-  border: none;
-  background: var(--accent);
-  color: #2a2130;
-  font-weight: bold;
-  font-size: 15px;
-  cursor: pointer;
-}
-
-.next-btn:disabled {
-  background: #5a4d55;
-  color: #9a8ba0;
-  cursor: not-allowed;
-}
-
-/* ============================================
-   홈 화면 (타이틀 이미지 배경 + 오른쪽 시작 버튼)
+   홈 화면 (타이틀 이미지 배경 + 오른쪽 시작 버튼 + 벚꽃잎 이펙트)
    파일: assets/ui/title-logo.png
    ============================================ */
 .home-screen {
@@ -412,6 +60,13 @@ button:hover { opacity: 0.85; }
   align-items: center;
   justify-content: flex-end;
   padding-right: 8%;
+}
+
+.home-action-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
 }
 
 .home-start-btn {
@@ -484,4 +139,273 @@ button:hover { opacity: 0.85; }
     transform: translateY(115vh) translateX(var(--drift, 40px)) rotate(var(--spin, 360deg));
     opacity: 0.7;
   }
+}
+
+/* ============================================
+   쌍장요란 화면 (여신 선택)
+   배경/타이틀 이미지 파일 경로:
+   - assets/ui/ssangjang-bg.jpg   (배경 사진)
+   - assets/ui/ssangjang-title.png (쌍장요란 글자 이미지)
+   ============================================ */
+.ssangjang-screen {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.ssangjang-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.ssangjang-white-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background: #ffffff;
+  animation: ssangjang-overlay-fade 5.2s ease forwards;
+}
+
+.ssangjang-white-overlay.intro-done {
+  animation: none;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes ssangjang-overlay-fade {
+  0% { opacity: 1; }
+  81% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.ssangjang-title {
+  position: absolute;
+  z-index: 5;
+  top: 50%;
+  left: 50%;
+  height: 90px;
+  transform: translate(-50%, -50%) scale(2.2);
+  opacity: 0;
+  animation: ssangjang-title-move 5.2s ease forwards;
+}
+
+.ssangjang-title.intro-done {
+  animation: none;
+  top: 28px;
+  left: 28px;
+  transform: translate(0, 0) scale(0.55);
+  opacity: 1;
+}
+
+@keyframes ssangjang-title-move {
+  0% {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(2.2);
+    opacity: 0;
+  }
+  4% {
+    opacity: 1;
+  }
+  81% {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(2.2);
+    opacity: 1;
+  }
+  100% {
+    top: 28px;
+    left: 28px;
+    transform: translate(0, 0) scale(0.55);
+    opacity: 1;
+  }
+}
+
+.ssangjang-hud {
+  position: absolute;
+  top: 28px;
+  right: 32px;
+  z-index: 3;
+  text-align: right;
+  color: white;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.mikoto-label {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.selection-count {
+  font-size: 14px;
+  margin-top: 4px;
+  color: #f0d5df;
+}
+
+/* ============================================
+   왼쪽 큰 미리보기 - 포커스된 여신을 항상 반영 (선택 여부 무관)
+   박스/테두리 없이 이미지만, 상단 약 60%만 보이도록 프레임 비율을 잡아둠
+   ============================================ */
+.focus-preview {
+  position: absolute;
+  left: 50px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  width: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.focus-preview-clip {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+}
+
+.focus-preview-clip img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-position: top;
+}
+
+.focus-preview-name {
+  color: white;
+  font-size: 26px;
+  font-weight: 900;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+/* ============================================
+   가로 한 줄 캐러셀 - 화살표로 포커스 이동, 손으로 드래그해서 스크롤 가능
+   ============================================ */
+.goddess-track-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  padding-bottom: 140px;
+  padding-left: 460px;
+  cursor: grab;
+  user-select: none;
+}
+
+.goddess-track-wrap.panning {
+  cursor: grabbing;
+}
+
+.goddess-track {
+  display: flex;
+  align-items: flex-end;
+  gap: 30px;
+  transition: transform 0.55s ease;
+  will-change: transform;
+  padding: 0 20px;
+}
+
+.goddess-track.no-transition {
+  transition: none;
+}
+
+.select-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.select-card {
+  position: relative;
+  width: 220px;
+  height: 320px;
+  background: rgba(20, 14, 24, 0.6);
+  border: 2px solid transparent;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.select-card.focused {
+  border-color: var(--accent);
+  background: rgba(232, 143, 176, 0.18);
+  z-index: 2;
+}
+
+.select-card.selected {
+  box-shadow: 0 0 0 4px #ffffff;
+}
+
+.select-card.selected .select-mark {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.select-mark {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 1;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #ffffffaa;
+  border-radius: 3px;
+  background: transparent;
+}
+
+.select-card-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.select-thumb {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60px;
+}
+
+.select-name {
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.next-btn {
+  position: absolute;
+  bottom: 28px;
+  right: 32px;
+  z-index: 3;
+  padding: 12px 32px;
+  border-radius: 999px;
+  border: none;
+  background: var(--accent);
+  color: #2a2130;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.next-btn:disabled {
+  background: #5a4d55;
+  color: #9a8ba0;
+  cursor: not-allowed;
 }
