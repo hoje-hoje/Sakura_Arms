@@ -210,7 +210,12 @@ function centerFocusedCard() {
   const wrapWidth = wrap.clientWidth;
   const cardCenter = focusedItem.offsetLeft + focusedItem.offsetWidth / 2;
   const offset = wrapWidth / 2 - cardCenter;
+
+  // 강제로 한 번 렌더링시킨 다음 트랜지션을 켜야, 방금 잡아둔 시작 위치에서 목표 위치까지 제대로 슬라이드됨
+  void track.offsetWidth;
+  track.classList.remove("no-transition");
   track.style.transform = `translateX(${offset}px)`;
+  ssangjangUI.lastOffset = offset;
 }
 
 // 드래그를 놓았을 때, 화면 중앙에 가장 가까운 카드로 스냅하며 그 카드를 포커스로 만듦
