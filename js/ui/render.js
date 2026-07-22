@@ -306,11 +306,9 @@ function applyScreenGlow(index) {
   const g = GODDESSES[index];
   const glow = document.getElementById("glow");
   if (!g || !glow) return;
-  if (g.image && dominantColorCache[g.id]) {
-    glow.style.boxShadow = `inset 0 0 170px 10px ${dominantColorCache[g.id]}`;
-  } else {
-    glow.style.boxShadow = "inset 0 0 170px 10px rgba(232,143,176,0.35)";
-  }
+  const color = g.image && dominantColorCache[g.id] ? dominantColorCache[g.id] : "rgba(232,143,176,0.9)";
+  // 아래쪽에만 진하게 몰리도록 (offset-y 음수 + spread 음수 조합)
+  glow.style.boxShadow = `inset 0 -260px 280px -60px ${color}`;
 }
 
 // 왼쪽 큰 미리보기 (포커스된 여신을 항상 반영, 선택 여부와 무관)
