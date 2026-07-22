@@ -116,10 +116,29 @@ function createSakuraPetals(count = 24) {
 // 여신 이미지의 대표색 캐시 (한 번 계산한 건 재사용)
 const dominantColorCache = {};
 
-// 쌍장요란 화면 전용 배경음악
-const ssangjangBGM = new Audio("assets/audio/Zoltraak.mp3");
+// 쌍장요란 화면 전용 배경음악 (여러 곡 - 타이틀 클릭 시 다음 곡으로 전환)
+const SSANGJANG_BGM_TRACKS = [
+  "assets/audio/Zoltraak.mp3",
+  "assets/audio/brainwash.mp3",
+];
+let ssangjangBgmIndex = 0;
+const ssangjangBGM = new Audio(SSANGJANG_BGM_TRACKS[ssangjangBgmIndex]);
 ssangjangBGM.loop = true;
 ssangjangBGM.volume = 0.8;
+
+function playSsangjangBGM() {
+  ssangjangBGM.currentTime = 0;
+  ssangjangBGM.play().catch((err) => {
+    console.error("브금 재생 실패:", err);
+  });
+}
+
+function switchSsangjangBGM() {
+  ssangjangBgmIndex = (ssangjangBgmIndex + 1) % SSANGJANG_BGM_TRACKS.length;
+  ssangjangBGM.pause();
+  ssangjangBGM.src = SSANGJANG_BGM_TRACKS[ssangjangBgmIndex];
+  playSsangjangBGM();
+}
 
 function renderSsangjangYoran() {
   const el = document.createElement("div");
