@@ -52,4 +52,5 @@ const ssangjangUI = {
   dragMoved: false,      // 이번 드래그가 실제로 움직였는지 (클릭과 구분하기 위함)
   dragStartX: 0,         // 드래그 시작 시점의 마우스 x좌표
   dragStartOffset: 0,    // 드래그 시작 시점의 카드 목록 위치(translateX)
+  lastOffset: 0,          // 카드 목록이 마지막으로 있던 위치 (다음 이동 애니메이션의 시작점)
 };
