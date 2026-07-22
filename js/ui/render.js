@@ -350,8 +350,8 @@ function extractDominantColor(imgEl) {
       count++;
     }
     if (count === 0) return "rgba(232,143,176,0.45)";
-    const [br, bg, bb] = boostSaturation(r / count, g / count, b / count, 1.35);
-    return `rgba(${br},${bg},${bb},0.45)`;
+    const [br, bg, bb] = boostSaturation(r / count, g / count, b / count, 1.8);
+    return `rgba(${br},${bg},${bb},0.6)`;
   } catch (e) {
     return "rgba(232,143,176,0.45)";
   }
