@@ -349,6 +349,7 @@ function extractDominantColor(imgEl) {
       b += data[i + 2];
       count++;
     }
+// 글로우 효과 코드 (채도)
     if (count === 0) return "rgba(232,143,176,0.45)";
     const [br, bg, bb] = boostSaturation(r / count, g / count, b / count, 1.8);
     return `rgba(${br},${bg},${bb},0.6)`;
