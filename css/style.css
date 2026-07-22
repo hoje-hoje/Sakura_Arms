@@ -475,3 +475,23 @@ button:hover { opacity: 0.85; }
   color: #9a8ba0;
   cursor: not-allowed;
 }
+
+.home-btn {
+  position: absolute;
+  bottom: 28px;
+  left: 32px;
+  z-index: 6;
+  padding: 12px 28px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+}
+
+.home-btn:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
