@@ -33,6 +33,7 @@
     align-items: center;
     justify-content: center;
     padding: 20px;
+    overflow-y: auto;
   }
   #setup-screen.hidden { display: none; }
   .setup-box {
@@ -130,7 +131,7 @@
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     flex-shrink: 0;
   }
   #main-header .path { font-size: 14px; color: var(--muted); flex-shrink: 0; }
@@ -155,6 +156,24 @@
     white-space: nowrap;
   }
   #save-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  #history-btn {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    font-size: 16px;
+  }
+  #history-btn:hover { border-color: var(--accent); color: var(--accent); }
+  #history-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
   #status {
     font-size: 12px;
     padding: 6px 20px;
@@ -218,6 +237,112 @@
     height: 100%;
     color: var(--muted);
   }
+
+  /* ---------- 히스토리 모달 ---------- */
+  #history-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  #history-overlay.active { display: flex; }
+
+  #history-modal {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 560px;
+    max-width: 92vw;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  #history-modal-header {
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  #history-modal-header h2 {
+    margin: 0;
+    font-size: 15px;
+  }
+  #history-modal-header .path {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  #history-close {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  #history-close:hover { color: var(--text); }
+
+  #history-list {
+    overflow-y: auto;
+    padding: 8px 0;
+  }
+  .history-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .history-item:last-child { border-bottom: none; }
+  .history-item.current {
+    background: rgba(232,143,176,0.08);
+  }
+  .history-info { flex: 1; min-width: 0; }
+  .history-msg {
+    font-size: 13px;
+    color: var(--text);
+    word-break: break-word;
+  }
+  .history-meta {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .history-badge {
+    display: inline-block;
+    font-size: 10px;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    padding: 1px 8px;
+    margin-left: 6px;
+  }
+  .history-rollback-btn {
+    flex-shrink: 0;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .history-rollback-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .history-rollback-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  #history-loading, #history-empty {
+    padding: 24px 18px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+  }
 </style>
 </head>
 <body>
@@ -226,6 +351,8 @@
 <div id="setup-screen">
   <div class="setup-box">
     <h1>관리자 사이트 연결 설정</h1>
+    <label>내 이름 (닉네임)</label>
+    <input type="text" id="input-username" placeholder="예: 호제 — 로그/커밋에 표시됩니다">
     <label>GitHub 아이디 (owner)</label>
     <input type="text" id="input-owner" placeholder="예: hoje-hoje">
     <label>저장소 이름 (repo)</label>
@@ -243,7 +370,9 @@
       5. Permissions → Repository permissions → <b>Contents: Read and write</b>로 설정<br>
       6. Generate token → 나오는 토큰 값 복사해서 위에 붙여넣기 (한 번만 보여주니 꼭 복사)<br><br>
       이 값들은 이 브라우저(이 컴퓨터)에만 저장되고 GitHub 서버로만 전송됩니다.
-      다른 사람 컴퓨터에서는 각자 자기 토큰으로 다시 설정해야 합니다.
+      다른 사람 컴퓨터에서는 각자 자기 이름/토큰으로 다시 설정해야 합니다.<br><br>
+      <b>내 이름</b>은 저장할 때 커밋 메시지 앞에 자동으로 붙어서, 누가 언제 뭘 고쳤는지
+      옆 파일의 "히스토리(시계 아이콘)" 버튼에서 바로 볼 수 있게 해줍니다.
     </div>
     <button id="connect-btn">연결하기</button>
   </div>
@@ -258,13 +387,28 @@
   <div id="main">
     <div id="main-header" style="display:none;">
       <span class="path" id="current-path"></span>
-      <input type="text" id="commit-msg" placeholder="커밋 메시지 (예: 여신 데이터 수정)">
+      <input type="text" id="commit-msg" placeholder="이번에 어떤 부분을 고쳤는지 짧게 (예: 여신 이미지 경로 수정)">
+      <button id="history-btn" title="수정 기록 / 롤백">🕒</button>
       <button id="save-btn">GitHub에 저장</button>
     </div>
     <div id="status"></div>
     <div id="code-container">
       <div id="empty-state">왼쪽에서 파일을 선택하세요</div>
     </div>
+  </div>
+</div>
+
+<!-- ============ 히스토리 모달 ============ -->
+<div id="history-overlay">
+  <div id="history-modal">
+    <div id="history-modal-header">
+      <div>
+        <h2>수정 기록</h2>
+        <div class="path" id="history-path"></div>
+      </div>
+      <button id="history-close">✕</button>
+    </div>
+    <div id="history-list"></div>
   </div>
 </div>
 
@@ -284,6 +428,7 @@
   function showSetup() {
     document.getElementById("setup-screen").classList.remove("hidden");
     document.getElementById("main-screen").classList.remove("active");
+    document.getElementById("input-username").value = CONFIG.userName || "";
     document.getElementById("input-owner").value = CONFIG.owner || "";
     document.getElementById("input-repo").value = CONFIG.repo || "";
     document.getElementById("input-branch").value = CONFIG.branch || "main";
@@ -298,13 +443,14 @@
 
   document.getElementById("connect-btn").onclick = () => {
     CONFIG = {
+      userName: document.getElementById("input-username").value.trim(),
       owner: document.getElementById("input-owner").value.trim(),
       repo: document.getElementById("input-repo").value.trim(),
       branch: document.getElementById("input-branch").value.trim() || "main",
       token: document.getElementById("input-token").value.trim(),
     };
-    if (!CONFIG.owner || !CONFIG.repo || !CONFIG.token) {
-      alert("아이디, 저장소 이름, 토큰을 모두 입력하세요.");
+    if (!CONFIG.userName || !CONFIG.owner || !CONFIG.repo || !CONFIG.token) {
+      alert("이름, 아이디, 저장소 이름, 토큰을 모두 입력하세요.");
       return;
     }
     saveConfig();
@@ -336,8 +482,9 @@
     );
   }
 
-  async function fetchFile(path) {
-    const res = await fetch(apiUrl(path), {
+  async function fetchFile(path, ref) {
+    const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${path}?ref=${ref || CONFIG.branch}`;
+    const res = await fetch(url, {
       headers: { Authorization: `token ${CONFIG.token}` },
     });
     if (!res.ok) {
@@ -369,16 +516,28 @@
     return await res.json();
   }
 
+  // 특정 파일의 커밋 히스토리 (최신순, 최대 30개)
+  async function fetchFileHistory(path) {
+    const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/commits?path=${encodeURIComponent(path)}&sha=${CONFIG.branch}&per_page=30`;
+    const res = await fetch(url, {
+      headers: { Authorization: `token ${CONFIG.token}` },
+    });
+    if (!res.ok) {
+      const body = await res.text();
+      throw new Error(`기록 불러오기 실패 (${res.status}): ${body}`);
+    }
+    return await res.json();
+  }
+
   // ============================================
   // 매니페스트 & 파일 목록
   // ============================================
   async function loadManifest() {
     try {
-      // viewer 폴더의 files.json을 그대로 재사용 (경로: 저장소 루트 기준 상대경로)
       const res = await fetch("../viewer/files.json");
       const raw = await res.json();
       filesManifest = raw.map((f) => ({
-        path: f.path.replace(/^\.\.\//, ""), // "../js/main.js" -> "js/main.js"
+        path: f.path.replace(/^\.\.\//, ""),
         label: f.label,
         group: f.group,
       }));
@@ -424,7 +583,8 @@
     });
     document.getElementById("main-header").style.display = "flex";
     document.getElementById("current-path").textContent = fileInfo.path;
-    document.getElementById("commit-msg").value = `${fileInfo.label} 수정`;
+    document.getElementById("commit-msg").value = "";
+    document.getElementById("history-btn").disabled = true;
     setStatus("", "");
 
     const container = document.getElementById("code-container");
@@ -460,7 +620,6 @@
         document.querySelector(`.file-item[data-path="${fileInfo.path}"]`).classList.add("dirty");
         updateLineNumbers();
       };
-      // 텍스트 스크롤할 때 줄 번호도 같이 스크롤되게
       textarea.onscroll = () => {
         lineNumbers.scrollTop = textarea.scrollTop;
       };
@@ -471,6 +630,7 @@
       updateLineNumbers();
 
       document.getElementById("save-btn").disabled = false;
+      document.getElementById("history-btn").disabled = false;
     } catch (e) {
       container.innerHTML = `<div id="empty-state" style="color:var(--red)">${e.message}</div>`;
     }
@@ -479,7 +639,13 @@
   document.getElementById("save-btn").onclick = async () => {
     if (!currentFile) return;
     const newContent = document.getElementById("editor").value;
-    const message = document.getElementById("commit-msg").value || `${currentFile.label} 수정`;
+    const summary = document.getElementById("commit-msg").value.trim();
+    if (!summary) {
+      alert("이번에 어떤 부분을 고쳤는지 짧게 적어주세요. (히스토리에 표시됩니다)");
+      return;
+    }
+    const message = `[${CONFIG.userName}] ${summary}`;
+
     setStatus("저장 중...", "saving");
     document.getElementById("save-btn").disabled = true;
 
@@ -489,6 +655,7 @@
       currentFile.content = newContent;
       isDirty = false;
       document.querySelector(`.file-item[data-path="${currentFile.path}"]`).classList.remove("dirty");
+      document.getElementById("commit-msg").value = "";
       setStatus("저장 완료! 사이트 반영까지 1분 정도 걸릴 수 있습니다.", "success");
     } catch (e) {
       setStatus(e.message, "error");
@@ -504,9 +671,131 @@
   }
 
   // ============================================
+  // 히스토리 / 롤백
+  // ============================================
+  const historyOverlay = document.getElementById("history-overlay");
+  const historyList = document.getElementById("history-list");
+
+  document.getElementById("history-btn").onclick = openHistory;
+  document.getElementById("history-close").onclick = closeHistory;
+  historyOverlay.addEventListener("click", (e) => {
+    if (e.target === historyOverlay) closeHistory();
+  });
+
+  function closeHistory() {
+    historyOverlay.classList.remove("active");
+  }
+
+  function formatDate(iso) {
+    const d = new Date(iso);
+    return d.toLocaleString("ko-KR", {
+      year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit",
+    });
+  }
+
+  async function openHistory() {
+    if (!currentFile) return;
+    document.getElementById("history-path").textContent = currentFile.path;
+    historyList.innerHTML = '<div id="history-loading">불러오는 중...</div>';
+    historyOverlay.classList.add("active");
+
+    try {
+      const commits = await fetchFileHistory(currentFile.path);
+      if (!commits || commits.length === 0) {
+        historyList.innerHTML = '<div id="history-empty">아직 이 파일의 수정 기록이 없습니다.</div>';
+        return;
+      }
+      historyList.innerHTML = "";
+      commits.forEach((c, idx) => {
+        const item = document.createElement("div");
+        item.className = "history-item" + (idx === 0 ? " current" : "");
+
+        const author = (c.commit && c.commit.author && c.commit.author.name) || "알 수 없음";
+        const date = (c.commit && c.commit.author && c.commit.author.date) || c.commit.committer.date;
+        const fullMsg = (c.commit && c.commit.message) || "";
+        const firstLine = fullMsg.split("\n")[0];
+
+        item.innerHTML = `
+          <div class="history-info">
+            <div class="history-msg">${escapeHtml(firstLine)}${idx === 0 ? '<span class="history-badge">현재</span>' : ""}</div>
+            <div class="history-meta">${escapeHtml(author)} · ${formatDate(date)} · ${c.sha.slice(0, 7)}</div>
+          </div>
+        `;
+
+        if (idx !== 0) {
+          const btn = document.createElement("button");
+          btn.className = "history-rollback-btn";
+          btn.textContent = "이 시점으로 롤백";
+          btn.onclick = () => rollbackTo(c.sha, firstLine, author);
+          item.appendChild(btn);
+        }
+
+        historyList.appendChild(item);
+      });
+    } catch (e) {
+      historyList.innerHTML = `<div id="history-empty" style="color:var(--red)">${escapeHtml(e.message)}</div>`;
+    }
+  }
+
+  async function rollbackTo(commitSha, commitMsg, author) {
+    if (!currentFile) return;
+    const ok = confirm(
+      `"${commitMsg}" (${author}) 시점의 내용으로 되돌릴까요?\n` +
+      `지금 편집기에 저장하지 않은 내용이 있다면 사라집니다.\n` +
+      `되돌리는 것도 하나의 새 커밋으로 기록되니, 필요하면 다시 이 화면에서 되돌릴 수 있습니다.`
+    );
+    if (!ok) return;
+
+    const btns = historyList.querySelectorAll(".history-rollback-btn");
+    btns.forEach((b) => (b.disabled = true));
+
+    try {
+      // 1) 해당 커밋 시점의 파일 내용 가져오기
+      const old = await fetchFile(currentFile.path, commitSha);
+
+      // 2) 지금 파일의 최신 sha를 다시 확인 (그 사이 다른 사람이 저장했을 수 있으므로)
+      const latest = await fetchFile(currentFile.path);
+
+      const message = `[${CONFIG.userName}] 롤백: "${commitMsg}" 시점으로 되돌림 (${commitSha.slice(0, 7)})`;
+      const result = await saveFile(currentFile.path, old.content, latest.sha, message);
+
+      // 3) 에디터에도 반영
+      currentFile.sha = result.content.sha;
+      currentFile.content = old.content;
+      isDirty = false;
+      const textarea = document.getElementById("editor");
+      if (textarea) {
+        textarea.value = old.content;
+        const lineNumbers = document.getElementById("line-numbers");
+        if (lineNumbers) {
+          const lineCount = old.content.split("\n").length;
+          let nums = "";
+          for (let i = 1; i <= lineCount; i++) nums += i + "\n";
+          lineNumbers.textContent = nums;
+        }
+      }
+      const dirtyEl = document.querySelector(`.file-item[data-path="${currentFile.path}"]`);
+      if (dirtyEl) dirtyEl.classList.remove("dirty");
+
+      closeHistory();
+      setStatus("롤백 완료! 사이트 반영까지 1분 정도 걸릴 수 있습니다.", "success");
+    } catch (e) {
+      alert("롤백 실패: " + e.message);
+      btns.forEach((b) => (b.disabled = false));
+    }
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // ============================================
   // 시작
   // ============================================
-  if (CONFIG.owner && CONFIG.repo && CONFIG.token) {
+  if (CONFIG.userName && CONFIG.owner && CONFIG.repo && CONFIG.token) {
     showMain();
   } else {
     showSetup();
