@@ -375,7 +375,7 @@ button:hover { opacity: 0.85; }
   bottom: 0;
   left: 310px;
   overflow-y: auto;
-  padding: 120px 30px 100px 90px;
+  padding: 120px 30px 100px 120px;
   z-index: 3;
 }
 
