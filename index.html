@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>벚꽃 내리는 시대에 결투를</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌸</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<script>
+  window.onerror = function (message, source, lineno, colno, error) {
+    document.body.innerHTML =
+      '<pre style="color:#ffb3b3;background:#1a1420;padding:24px;white-space:pre-wrap;font-size:14px;line-height:1.6;">' +
+      '에러 발생!\n\n' +
+      '메시지: ' + message + '\n' +
+      '파일: ' + source + '\n' +
+      '줄 번호: ' + lineno + '\n\n' +
+      (error && error.stack ? error.stack : '') +
+      '</pre>';
+  };
+</script>
+<body>
+  <div id="app"></div>
+  <!-- ============================================
+       이 파일(index.html)은 껍데기 역할만 합니다.
+       실제 로직/데이터는 아래 js 파일들에 나눠져 있으니
+       버그 수정이나 기능 추가 시 해당 파일만 열어서 고치면 됩니다.
+       ============================================ -->
+  <!-- 1. 데이터 (여신, 카드) -->
+  <script src="js/data/goddesses.js"></script>
+  <!-- 2. 게임 엔진 (상태, 규칙) -->
+  <script src="js/engine/gameState.js"></script>
+  <script src="js/engine/phases.js"></script>
+  <!-- 3. UI (화면 렌더링) -->
+  <script src="js/ui/render.js"></script>
+  <!-- 4. 진입점 -->
+  <script src="js/main.js"></script>
+</body>
+</html>
