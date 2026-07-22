@@ -46,8 +46,7 @@ button {
 button:hover { opacity: 0.85; }
 
 /* ============================================
-   홈 화면 (타이틀 이미지 배경 + 오른쪽 시작 버튼 + 벚꽃잎 이펙트)
-   파일: assets/ui/title-logo.png
+   홈 화면
    ============================================ */
 .home-screen {
   position: fixed;
@@ -128,24 +127,13 @@ button:hover { opacity: 0.85; }
 }
 
 @keyframes petal-fall {
-  0% {
-    transform: translateY(0) translateX(0) rotate(0deg);
-    opacity: 0;
-  }
-  8% {
-    opacity: 0.9;
-  }
-  100% {
-    transform: translateY(115vh) translateX(var(--drift, 40px)) rotate(var(--spin, 360deg));
-    opacity: 0.7;
-  }
+  0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+  8% { opacity: 0.9; }
+  100% { transform: translateY(115vh) translateX(var(--drift, 40px)) rotate(var(--spin, 360deg)); opacity: 0.7; }
 }
 
 /* ============================================
-   쌍장요란 화면 (여신 선택)
-   배경/타이틀 이미지 파일 경로:
-   - assets/ui/ssangjang-bg.jpg   (배경 사진)
-   - assets/ui/ssangjang-title.png (쌍장요란 글자 이미지)
+   쌍장요란 화면
    ============================================ */
 .ssangjang-screen {
   position: fixed;
@@ -203,27 +191,10 @@ button:hover { opacity: 0.85; }
 }
 
 @keyframes ssangjang-title-move {
-  0% {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(2.2);
-    opacity: 0;
-  }
-  5% {
-    opacity: 1;
-  }
-  81% {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(2.2);
-    opacity: 1;
-  }
-  100% {
-    top: 28px;
-    left: 28px;
-    transform: translate(0, 0) scale(0.55);
-    opacity: 1;
-  }
+  0% { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
+  5% { opacity: 1; }
+  81% { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(2.2); opacity: 1; }
+  100% { top: 28px; left: 28px; transform: translate(0, 0) scale(0.55); opacity: 1; }
 }
 
 .ssangjang-hud {
@@ -234,6 +205,10 @@ button:hover { opacity: 0.85; }
   text-align: right;
   color: white;
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
 }
 
 .mikoto-label {
@@ -243,13 +218,68 @@ button:hover { opacity: 0.85; }
 
 .selection-count {
   font-size: 14px;
-  margin-top: 4px;
   color: #f0d5df;
 }
 
+/* ---- 현재 선택된 여신 2슬롯 표시 ---- */
+.selected-slots {
+  display: flex;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.selected-slot {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.selected-slot.empty {
+  border: 2px dashed rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.selected-slot.filled {
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 14px rgba(232, 143, 176, 0.6);
+}
+
+.selected-slot.filled img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+.selected-slot.filled.emoji .selected-slot-emoji {
+  font-size: 28px;
+}
+
+.selected-slot-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  font-size: 9px;
+  text-align: center;
+  color: white;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 2px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* ============================================
-   왼쪽 큰 미리보기 - 포커스된 여신을 항상 반영 (선택 여부 무관)
-   박스/테두리 없이 이미지만, 상단 약 60%만 보이도록 프레임 비율을 잡아둠
+   왼쪽 큰 미리보기
    ============================================ */
 .focus-preview {
   position: absolute;
@@ -318,15 +348,14 @@ button:hover { opacity: 0.85; }
 }
 
 /* ============================================
-   격자 선택 (KOF 스타일) - 오른쪽에 몰아두고 상하좌우 화살표로 이동
-   여신이 많아서 세로 스크롤 가능하게 함
+   격자 선택
    ============================================ */
 .goddess-grid-wrap {
   position: absolute;
   inset: 0;
   z-index: 1;
   overflow-y: auto;
-  padding: 140px 40px 110px 420px; /* 왼쪽 미리보기 패널과 안 겹치게 */
+  padding: 140px 40px 110px 420px;
 }
 
 .goddess-grid {
