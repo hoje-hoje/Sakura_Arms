@@ -116,6 +116,11 @@ function createSakuraPetals(count = 24) {
 // 여신 이미지의 대표색 캐시 (한 번 계산한 건 재사용)
 const dominantColorCache = {};
 
+// 쌍장요란 화면 전용 배경음악
+const ssangjangBGM = new Audio("assets/audio/ssangjang-bgm.mp3");
+ssangjangBGM.loop = true;
+ssangjangBGM.volume = 0.8;
+
 function renderSsangjangYoran() {
   const el = document.createElement("div");
   el.className = "ssangjang-screen";
@@ -175,15 +180,24 @@ function renderSsangjangYoran() {
   `;
 
   const overlay = el.querySelector("#overlay");
-  if (!ssangjangUI.introPlayed) {
-    overlay.addEventListener(
-      "animationend",
-      () => {
-        ssangjangUI.introPlayed = true;
-      },
-      { once: true }
-    );
-  }
+  const titleEl = el.querySelector("#title");
+
+  overlay.addEventListener(
+    "animationend",
+    () => {
+      ssangjangUI.introPlayed = true;
+    },
+    { once: true }
+  );
+  // 타이틀이 좌상단으로 이동을 끝내는 순간(4.2초) 브금 시작
+  titleEl.addEventListener(
+    "animationend",
+    () => {
+      ssangjangBGM.currentTime = 0;
+      ssangjangBGM.play().catch(() => {});
+    },
+    { once: true }
+  );
 
   const grid = el.querySelector("#grid");
   GODDESSES.forEach((g, index) => {
@@ -225,6 +239,8 @@ function renderSsangjangYoran() {
 
   el.querySelector("#next-btn").onclick = advanceSsangjangYoran;
   el.querySelector("#home-btn").onclick = () => {
+    ssangjangBGM.pause();
+    ssangjangBGM.currentTime = 0;
     gameState.players.forEach((p) => { p.goddesses = []; });
     ssangjangUI.activePlayerIndex = 0;
     ssangjangUI.focusedIndex = 0;
