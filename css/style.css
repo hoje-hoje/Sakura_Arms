@@ -335,7 +335,7 @@ button:hover { opacity: 0.85; }
   border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition: border-color 1.4s ease, background 1.4s ease;
 }
 
 .select-card.focused {
