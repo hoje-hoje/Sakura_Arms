@@ -42,6 +42,15 @@ function logEvent(message) {
 // 쌍장요란 화면 전용 UI 상태
 // (게임 규칙이 아니라 "지금 화면에서 뭐가 포커스됐는지" 같은 화면 진행 상태)
 // ============================================
+// ============================================
+// 안전구축 화면 전용 UI 상태
+// ============================================
+const anjeonUI = {
+  activePlayerIndex: 0,
+  selectedNormal: [],  // 고른 통상패 (최대 7)
+  selectedSpecial: [], // 고른 비장패 (최대 3)
+};
+
 const ssangjangUI = {
   activePlayerIndex: 0, // 지금 고르는 중인 미코토 (0 = 미코토 1, 1 = 미코토 2)
   focusedIndex: 0,      // 방향키로 움직이는 카드 위치 (GODDESSES 배열 인덱스)
