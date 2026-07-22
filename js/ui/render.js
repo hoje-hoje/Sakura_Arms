@@ -171,6 +171,7 @@ function renderSsangjangYoran() {
       <img id="selection-flash-img" src="" alt="">
     </div>
     <button class="next-btn" id="next-btn" ${selectedCount < 2 ? "disabled" : ""}>다음 -></button>
+    <button class="home-btn" id="home-btn">홈으로</button>
   `;
 
   const overlay = el.querySelector("#overlay");
@@ -223,6 +224,13 @@ function renderSsangjangYoran() {
   });
 
   el.querySelector("#next-btn").onclick = advanceSsangjangYoran;
+  el.querySelector("#home-btn").onclick = () => {
+    gameState.phase = PHASE.HOME;
+    render();
+  };
+
+  return el;
+}
 
   return el;
 }
