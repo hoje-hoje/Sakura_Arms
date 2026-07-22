@@ -179,7 +179,7 @@ button:hover { opacity: 0.85; }
 
 @keyframes ssangjang-overlay-fade {
   0% { opacity: 1; }
-  81% { opacity: 1; }
+  76% { opacity: 1; }
   100% { opacity: 0; }
 }
 
@@ -191,7 +191,7 @@ button:hover { opacity: 0.85; }
   height: 90px;
   transform: translate(-50%, -50%) scale(2.2);
   opacity: 0;
-  animation: ssangjang-title-move 5.2s ease forwards;
+  animation: ssangjang-title-move 4.2s ease forwards;
 }
 
 .ssangjang-title.intro-done {
@@ -209,7 +209,7 @@ button:hover { opacity: 0.85; }
     transform: translate(-50%, -50%) scale(2.2);
     opacity: 0;
   }
-  4% {
+  5% {
     opacity: 1;
   }
   81% {
