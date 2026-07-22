@@ -212,13 +212,12 @@ function renderSsangjangYoran() {
   titleEl.addEventListener(
     "animationend",
     () => {
-      ssangjangBGM.currentTime = 0;
-      ssangjangBGM.play().catch((err) => {
-        console.error("브금 재생 실패:", err);
-      });
+      playSsangjangBGM();
     },
     { once: true }
   );
+  // 타이틀 클릭 -> 다음 곡으로 전환 (2곡 이상이면 순환)
+  titleEl.addEventListener("click", switchSsangjangBGM);
 
   const grid = el.querySelector("#grid");
   GODDESSES.forEach((g, index) => {
