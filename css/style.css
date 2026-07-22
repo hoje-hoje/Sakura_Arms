@@ -168,7 +168,7 @@ button:hover { opacity: 0.85; }
   inset: 0;
   z-index: 4;
   background: #ffffff;
-  animation: ssangjang-overlay-fade 5.2s ease forwards;
+  animation: ssangjang-overlay-fade 3.7s ease forwards;
 }
 
 .ssangjang-white-overlay.intro-done {
@@ -309,7 +309,7 @@ button:hover { opacity: 0.85; }
   display: flex;
   align-items: flex-end;
   gap: 30px;
-  transition: transform 0.95s ease;
+  transition: transform 1.4s ease;
   will-change: transform;
   padding: 0 20px;
 }
