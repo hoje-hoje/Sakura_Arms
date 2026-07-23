@@ -140,6 +140,16 @@ function switchSsangjangBGM() {
   playSsangjangBGM();
 }
 
+// 여신 선택 시 재생되는 클릭 효과음
+const goddessSelectSound = new Audio("assets/audio/픽.mp3");
+
+function playGoddessSelectSound() {
+  goddessSelectSound.currentTime = 0;
+  goddessSelectSound.play().catch((err) => {
+    console.error("선택 효과음 재생 실패:", err);
+  });
+}
+
 function renderSsangjangYoran() {
   const el = document.createElement("div");
   el.className = "ssangjang-screen";
@@ -292,7 +302,10 @@ function selectGoddessAt(index) {
 
   toggleGoddessSelection(ssangjangUI.activePlayerIndex, g.id);
 
-  if (willActuallySelect) playSelectionFlash(g);
+  if (willActuallySelect) {
+    playSelectionFlash(g);
+    playGoddessSelectSound();
+  }
 }
 
 function getSsangjangGridColumnCount() {
