@@ -142,6 +142,7 @@ function switchSsangjangBGM() {
 
 // 여신 선택 시 재생되는 클릭 효과음
 const goddessSelectSound = new Audio("assets/audio/픽.mp3");
+goddessSelectSound.volume = 1.0;
 
 function playGoddessSelectSound() {
   goddessSelectSound.currentTime = 0;
