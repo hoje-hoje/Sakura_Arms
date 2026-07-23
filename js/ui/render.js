@@ -124,7 +124,7 @@ const SSANGJANG_BGM_TRACKS = [
 let ssangjangBgmIndex = 0;
 const ssangjangBGM = new Audio(SSANGJANG_BGM_TRACKS[ssangjangBgmIndex]);
 ssangjangBGM.loop = true;
-ssangjangBGM.volume = 0.8;
+ssangjangBGM.volume = 0;
 
 function playSsangjangBGM() {
   ssangjangBGM.currentTime = 0;
