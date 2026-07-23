@@ -304,8 +304,9 @@ function selectGoddessAt(index) {
   toggleGoddessSelection(ssangjangUI.activePlayerIndex, g.id);
 
   if (willActuallySelect) {
-    playSelectionFlash(g);
     playGoddessSelectSound();
+    playSelectionFlash(g);
+    
   }
 }
 
