@@ -68,6 +68,11 @@ function finishMulligan() {
   bk.phaseInTurn = "PLAY";
   bk.turnNumber = 1;
   bk.mulliganSelected = [];
+
+  // 로컬(패스앤플레이) 환경이므로, 턴이 시작되는 순간 화면 관점도
+  // 지금 턴을 잡은 활성 플레이어 쪽으로 맞춰준다.
+  localViewIndex = bk.activePlayerIndex;
+
   render();
 }
 
@@ -107,6 +112,10 @@ function endBeotkkotTurn() {
   // 턴 교대
   bk.activePlayerIndex = 1 - bk.activePlayerIndex;
   bk.turnNumber += 1;
+
+  // 로컬(패스앤플레이) 환경이므로, 턴이 넘어가면 화면 관점도
+  // 새로 턴을 잡은 플레이어 쪽으로 자동 전환한다.
+  localViewIndex = bk.activePlayerIndex;
 
   const newActive = bk.players[bk.activePlayerIndex];
 
