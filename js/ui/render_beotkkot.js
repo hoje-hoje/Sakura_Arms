@@ -337,7 +337,8 @@ function buildTurnBar(bk) {
 function renderMulliganScreen() {
   const bk = gameState.beotkkot;
   const player = bk.players[bk.mulliganPlayerIndex];
-  const isMyMulligan = bk.mulliganPlayerIndex === localViewIndex;
+  // 로컬(패스앤플레이) 환경이므로 관점(localViewIndex)과 무관하게
+  // 지금 멀리건 차례인 플레이어 손패를 바로 보여주고 조작 가능하게 한다.
 
   const wrap = document.createElement("div");
   wrap.className = "beotkkot-wrap bk-mulligan-wrap";
@@ -364,22 +365,18 @@ function renderMulliganScreen() {
   box.innerHTML = `
     <div class="bk-mulligan-title">${player.name} 멀리건</div>
     <div class="bk-mulligan-desc">
-      ${isMyMulligan
-        ? "바꾸고 싶은 카드를 클릭해서 선택한 뒤 확정하세요. 아무것도 선택 안 하고 확정해도 됩니다."
-        : "상대가 멀리건을 진행 중입니다..."}
+      바꾸고 싶은 카드를 클릭해서 선택한 뒤 확정하세요. 아무것도 선택 안 하고 확정해도 됩니다.
     </div>
-    <div class="bk-mulligan-cards">${isMyMulligan ? cardsHTML : `<div class="bk-mulligan-hidden">비공개</div>`}</div>
-    <button class="zone-btn bk-mulligan-confirm" ${isMyMulligan ? "" : "disabled"}>
+    <div class="bk-mulligan-cards">${cardsHTML}</div>
+    <button class="zone-btn bk-mulligan-confirm">
       ${bk.mulliganSelected.length > 0 ? bk.mulliganSelected.length + "장 바꾸고 " : ""}확정
     </button>
   `;
 
-  if (isMyMulligan) {
-    box.querySelectorAll(".bk-mulligan-card").forEach((el) => {
-      el.addEventListener("click", () => toggleMulliganCard(parseInt(el.dataset.index, 10)));
-    });
-    box.querySelector(".bk-mulligan-confirm").addEventListener("click", confirmMulligan);
-  }
+  box.querySelectorAll(".bk-mulligan-card").forEach((el) => {
+    el.addEventListener("click", () => toggleMulliganCard(parseInt(el.dataset.index, 10)));
+  });
+  box.querySelector(".bk-mulligan-confirm").addEventListener("click", confirmMulligan);
 
   wrap.appendChild(box);
   return wrap;
