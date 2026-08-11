@@ -56,12 +56,31 @@ function buildDeckStackContent(count, backImg, horizontal) {
   return `<div class="${cls}">${imgs}</div><div class="deck-count">${count}</div>`;
 }
 
+// 카드 앞면을 실제 이미지로 렌더링 (cards.js의 image 필드 사용).
+// 이미지 로딩이 실패하면(아직 에셋 업로드 전 등) onerror로 자동으로 이름 텍스트로 대체된다.
+function buildCardFaceHTML(ref, extraClasses) {
+  const card = resolveCard(ref);
+  const name = card ? card.name : "?";
+  const cls = ["card-face"].concat(extraClasses || []).join(" ");
+  const dataAttrs = `data-goddess="${ref.goddessId}" data-card="${ref.cardId}"`;
+
+  if (card && card.image) {
+    return `<div class="${cls}" ${dataAttrs} title="${name}">
+      <img class="card-face-img" src="${card.image}" alt="${name}"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="card-face-fallback" style="display:none;">${name}</div>
+    </div>`;
+  }
+  return `<div class="${cls}" ${dataAttrs} title="${name}">
+    <div class="card-face-fallback">${name}</div>
+  </div>`;
+}
+
 // 버림패 슬롯(1~6번): index(0-based) 카드가 있으면 표시, 없으면 빈칸
 function buildDiscardSlotContent(beotkkotPlayer, slotIndex) {
   const ref = beotkkotPlayer.discard[slotIndex];
   if (!ref) return `<div class="slot-empty"></div>`;
-  const card = resolveCard(ref);
-  return `<div class="card-face" title="${card ? card.name : ""}">${card ? card.name : "?"}</div>`;
+  return buildCardFaceHTML(ref);
 }
 
 // 손패 슬롯(내 쪽, 1~4번): "나"의 손패는 실시간 관점에서 항상 나 자신에게는
@@ -70,9 +89,7 @@ function buildDiscardSlotContent(beotkkotPlayer, slotIndex) {
 function buildHandSlotContent(beotkkotPlayer, isMyTurn, slotIndex) {
   const ref = beotkkotPlayer.hand[slotIndex];
   if (!ref) return `<div class="slot-empty"></div>`;
-  const card = resolveCard(ref);
-  const clickableClass = isMyTurn ? "clickable" : "disabled";
-  return `<div class="card-face ${clickableClass}" data-goddess="${ref.goddessId}" data-card="${ref.cardId}">${card ? card.name : "?"}</div>`;
+  return buildCardFaceHTML(ref, [isMyTurn ? "clickable" : "disabled"]);
 }
 
 // 상대 손패(뭉뚱그린 한 칸): 장수만 표시, 항상 뒷면
@@ -82,12 +99,22 @@ function buildOpponentHandCollapsedContent(beotkkotPlayer) {
   return buildDeckStackContent(count, CARD_BACK_NORMAL);
 }
 
-// 비장패 슬롯(1~3번): 미사용=뒷면, 사용됨=흐리게 처리(실제 앞면 이미지 준비되면 교체)
+// 비장패 슬롯(1~3번): 미사용=뒷면(7-1-11), 사용됨=앞면(실제 카드 이미지).
+// 앞면 이미지 로딩 실패 시 뒷면 이미지로 대체.
 function buildSpecialSlotContent(beotkkotPlayer, slotIndex) {
   const entry = beotkkotPlayer.special[slotIndex];
   if (!entry) return `<div class="slot-empty"></div>`;
-  const opacity = entry.used ? "opacity:0.4;" : "";
-  return `<img class="card-img" style="${opacity}" src="${CARD_BACK_SPECIAL}" alt="">`;
+
+  if (!entry.used) {
+    return `<img class="card-img" src="${CARD_BACK_SPECIAL}" alt="">`;
+  }
+
+  const card = resolveCard(entry.card);
+  if (card && card.image) {
+    return `<img class="card-img" src="${card.image}" alt="${card.name}"
+      onerror="this.src='${CARD_BACK_SPECIAL}'; this.style.opacity=0.6;">`;
+  }
+  return `<img class="card-img" style="opacity:0.6;" src="${CARD_BACK_SPECIAL}" alt="">`;
 }
 
 // 추가패(여신별 추가 카드) 파일: extra 배열 그대로 스택으로
@@ -321,9 +348,15 @@ function renderMulliganScreen() {
   const cardsHTML = player.hand
     .map((ref, i) => {
       const card = resolveCard(ref);
+      const name = card ? card.name : "?";
       const selected = bk.mulliganSelected.includes(i);
+      const imgHTML = card && card.image
+        ? `<img class="bk-mulligan-card-img" src="${card.image}" alt="${name}"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+           <div class="bk-mulligan-card-fallback" style="display:none;">${name}</div>`
+        : `<div class="bk-mulligan-card-fallback">${name}</div>`;
       return `<div class="bk-mulligan-card ${selected ? "selected" : ""}" data-index="${i}">
-        ${card ? card.name : "?"}
+        ${imgHTML}
       </div>`;
     })
     .join("");
