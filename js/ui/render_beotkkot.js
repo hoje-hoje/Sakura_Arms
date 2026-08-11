@@ -97,11 +97,15 @@ function buildExtraPileContent(beotkkotPlayer, pileFilterFn) {
   return buildDeckStackContent(list.length, CARD_BACK_NORMAL) + `<div class="zone-caption">추가패</div>`;
 }
 
-function buildFocusContent(beotkkotPlayer) {
+function buildFocusContent(beotkkotPlayer, canSpend) {
+  const btn = canSpend && beotkkotPlayer.focus > 0
+    ? `<button class="zone-btn focus-spend-btn" data-action="spend-focus">사용</button>`
+    : "";
   return `
     <img class="focus-token" src="${FOCUS_TOKEN_IMG}" alt="">
     <div class="focus-num">${beotkkotPlayer.focus}/${beotkkotPlayer.focusLimit}</div>
     ${beotkkotPlayer.isWithered ? `<div class="withered-tag">위축</div>` : ""}
+    ${btn}
   `;
 }
 
@@ -204,8 +208,8 @@ function resolveZoneContent(name, bk) {
     case "덮음패_you": return buildFacedownPileContent(you);
     case "덮음패_me": return buildFacedownPileContent(me);
 
-    case "집중력_me": return buildFocusContent(me);
-    case "집중력_you": return buildFocusContent(you);
+    case "집중력_me": return buildFocusContent(me, bk.activePlayerIndex === localViewIndex);
+    case "집중력_you": return buildFocusContent(you, false);
 
     case "프로필": return buildProfileContent(bk);
 
@@ -225,6 +229,13 @@ function buildBeotkkotZone(shape, allShapes, bk) {
 
   const content = resolveZoneContent(shape.name, bk);
   if (content) el.innerHTML = content;
+
+  // 집중력 "사용" 버튼: 항상 localViewIndex(나) 쪽에서만 눌러야 하므로
+  // spendFocus에는 localViewIndex를 그대로 넘긴다(내 턴이 아니면 함수 내부에서 무시됨).
+  const focusBtn = el.querySelector("[data-action='spend-focus']");
+  if (focusBtn) {
+    focusBtn.addEventListener("click", () => spendFocus(localViewIndex));
+  }
 
   allShapes
     .filter((s) => s.parent === shape.name)
@@ -248,13 +259,17 @@ function toggleLocalViewAndRender() {
 }
 
 function renderBeotkkotGyeoltu() {
+  const bk = gameState.beotkkot;
+
+  if (bk.phaseInTurn === "MULLIGAN") {
+    return renderMulliganScreen();
+  }
+
   const wrap = document.createElement("div");
   wrap.className = "beotkkot-wrap";
 
   const stage = document.createElement("div");
   stage.className = "bk-stage";
-
-  const bk = gameState.beotkkot;
 
   BEOTKKOT_LAYOUT.filter((s) => !s.parent).forEach((shape) => {
     const el = buildBeotkkotZone(shape, BEOTKKOT_LAYOUT, bk);
@@ -266,5 +281,73 @@ function renderBeotkkotGyeoltu() {
   });
 
   wrap.appendChild(stage);
+  wrap.appendChild(buildTurnBar(bk));
+  return wrap;
+}
+
+// 화면 상단에 떠 있는 턴 정보 + 턴 종료 버튼.
+// (BEOTKKOT_LAYOUT 좌표에는 이 버튼 자리가 따로 없어서, 스테이지 위에 얹는 별도 바로 만듦)
+function buildTurnBar(bk) {
+  const bar = document.createElement("div");
+  bar.className = "bk-turnbar";
+
+  const isMyTurn = bk.activePlayerIndex === localViewIndex;
+  const activeName = bk.players[bk.activePlayerIndex].name;
+
+  bar.innerHTML = `
+    <span class="bk-turnbar-info">턴 ${bk.turnNumber} · ${activeName} 차례${isMyTurn ? " (내 턴)" : ""}</span>
+    <button class="zone-btn bk-endturn-btn" ${isMyTurn ? "" : "disabled"}>턴 종료</button>
+  `;
+
+  bar.querySelector(".bk-endturn-btn").addEventListener("click", () => {
+    if (isMyTurn) endBeotkkotTurn();
+  });
+
+  return bar;
+}
+
+// 4-1-5 멀리건 화면
+function renderMulliganScreen() {
+  const bk = gameState.beotkkot;
+  const player = bk.players[bk.mulliganPlayerIndex];
+  const isMyMulligan = bk.mulliganPlayerIndex === localViewIndex;
+
+  const wrap = document.createElement("div");
+  wrap.className = "beotkkot-wrap bk-mulligan-wrap";
+
+  const box = document.createElement("div");
+  box.className = "bk-mulligan-box";
+
+  const cardsHTML = player.hand
+    .map((ref, i) => {
+      const card = resolveCard(ref);
+      const selected = bk.mulliganSelected.includes(i);
+      return `<div class="bk-mulligan-card ${selected ? "selected" : ""}" data-index="${i}">
+        ${card ? card.name : "?"}
+      </div>`;
+    })
+    .join("");
+
+  box.innerHTML = `
+    <div class="bk-mulligan-title">${player.name} 멀리건</div>
+    <div class="bk-mulligan-desc">
+      ${isMyMulligan
+        ? "바꾸고 싶은 카드를 클릭해서 선택한 뒤 확정하세요. 아무것도 선택 안 하고 확정해도 됩니다."
+        : "상대가 멀리건을 진행 중입니다..."}
+    </div>
+    <div class="bk-mulligan-cards">${isMyMulligan ? cardsHTML : `<div class="bk-mulligan-hidden">비공개</div>`}</div>
+    <button class="zone-btn bk-mulligan-confirm" ${isMyMulligan ? "" : "disabled"}>
+      ${bk.mulliganSelected.length > 0 ? bk.mulliganSelected.length + "장 바꾸고 " : ""}확정
+    </button>
+  `;
+
+  if (isMyMulligan) {
+    box.querySelectorAll(".bk-mulligan-card").forEach((el) => {
+      el.addEventListener("click", () => toggleMulliganCard(parseInt(el.dataset.index, 10)));
+    });
+    box.querySelector(".bk-mulligan-confirm").addEventListener("click", confirmMulligan);
+  }
+
+  wrap.appendChild(box);
   return wrap;
 }
