@@ -32,10 +32,108 @@ const gameState = {
     // 지역 영향력/확장 등 게임판 상태. 규칙 확정 후 채울 예정.
   },
   log: [],
+
+  // 벚꽃결투 화면 진입 전에는 null. setupBeotkkotGyeoltu()가 실제 값을 채움.
+  // (render_beotkkot.js가 이 값을 읽어서 화면을 그리므로, 이게 비어있으면
+  //  "Cannot read properties of undefined (reading 'players')" 에러가 남)
+  beotkkot: null,
 };
 
 function logEvent(message) {
   gameState.log.push(message);
+}
+
+// ============================================
+// 벚꽃결투 플레이어 상태 (통합 규칙 5-1, 7-1 대응)
+// ============================================
+function createBeotkkotPlayerState(name) {
+  return {
+    name,
+
+    // 5-1-5~5-1-7: 벚꽃결정 수치
+    life: 10,
+    aura: 3,
+    flare: 0,
+
+    // 5-1-2, 5-1-3: 집중력 / 손패 상한
+    focus: 0,
+    focusLimit: 2,
+    handLimit: 2,
+
+    // 5-1-4: 위축 상태
+    isWithered: false,
+
+    // 7-1-6 <패산>: 뒷면, 순서 있는 묶음. index 0이 맨 위.
+    pile: [],
+
+    // 7-1-7 <버림패>
+    discard: [],
+
+    // 7-1-8 <덮음패>
+    facedown: [],
+
+    // 7-1-9 <부여패>: [{ card: {goddessId,cardId}, sakuraCount: number }]
+    bond: [],
+
+    // 7-1-10 <손패>
+    hand: [],
+
+    // 7-1-11 <비장패>: 안전구축에서 고른 3장 고정.
+    // [{ card: {goddessId,cardId}, used: boolean }]
+    special: [],
+
+    // 7-1-12 <추가패>
+    extra: [],
+
+    // 여신별 특수 상태(추가판에 표시). 여신 id를 key로.
+    goddessState: {},
+
+    // 선택한 여신 (쌍장요란에서 확정된 것을 그대로 참조)
+    goddesses: [],
+  };
+}
+
+// ============================================
+// 벚꽃결투 준비 (통합 규칙 4-1)
+// 안전구축까지 끝난 gameState.players 정보를 바탕으로
+// gameState.beotkkot을 실제로 만들어 채운다.
+// 이 함수를 호출하지 않으면 gameState.beotkkot이 계속 null로 남는다.
+// ============================================
+function setupBeotkkotGyeoltu() {
+  gameState.beotkkot = {
+    activePlayerIndex: 0,
+    turnNumber: 1,
+    phaseInTurn: null,
+
+    // 5-2-1, 5-2-2: 간격 / 달인의 간격
+    interval: 5,
+    masterInterval: 2,
+
+    // 5-2-3: 더스트
+    dust: 0,
+
+    players: [
+      createBeotkkotPlayerState(gameState.players[0].name),
+      createBeotkkotPlayerState(gameState.players[1].name),
+    ],
+  };
+
+  // 4-1-3: 활성 플레이어 무작위 선택
+  gameState.beotkkot.activePlayerIndex = Math.floor(Math.random() * 2);
+
+  gameState.players.forEach((prepPlayer, i) => {
+    const bp = gameState.beotkkot.players[i];
+    bp.goddesses = prepPlayer.goddesses;
+
+    // 4-1-2: 통상패 7장은 패산, 비장패 3장은 비장패 영역(미사용)으로
+    bp.pile = prepPlayer.normalDeck.map((c) => ({ goddessId: c.goddess, cardId: c.id }));
+    bp.special = prepPlayer.specialDeck.map((c) => ({
+      card: { goddessId: c.goddess, cardId: c.id },
+      used: false,
+    }));
+  });
+
+  gameState.phase = PHASE.BEOTKKOT_GYEOLTU;
 }
 
 // ============================================
