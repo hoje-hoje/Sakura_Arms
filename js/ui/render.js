@@ -560,17 +560,3 @@ function anjeonCardTile(card) {
   return tile;
 }
 
-function renderBeotkkotGyeoltu() {
-  const el = document.createElement("div");
-  el.className = "screen";
-  el.innerHTML = `
-    <div class="panel">
-      <h2>벚꽃결투</h2>
-      <p>TODO: 게임판, 액션 포인트, 핸드, 지역 영향력 UI</p>
-      <div id="log"></div>
-    </div>
-  `;
-  const logDiv = el.querySelector("#log");
-  logDiv.innerHTML = gameState.log.map((l) => `<div>${l}</div>`).join("");
-  return el;
-}
