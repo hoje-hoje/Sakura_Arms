@@ -2,14 +2,14 @@
   { "path": "../index.html", "label": "index.html", "group": "구조" },
   { "path": "../js/main.js", "label": "main.js", "group": "구조" },
   { "path": "../css/style.css", "label": "style.css", "group": "스타일" },
-  { "path": "../css/beotkkot.css", "label": "beotkkot.css", "group": "스타일" },
   { "path": "../js/data/goddesses.js", "label": "goddesses.js (여신 데이터)", "group": "데이터" },
   { "path": "../js/data/cards.js", "label": "cards.js (카드 데이터)", "group": "데이터" },
-  { "path": "../js/data/layoutBeotkkot.js", "label": "layoutBeotkkot.js (레이아웃)", "group": "데이터" },
+  { "path": "../js/data/layoutBeotkkot.js", "label": "layoutBeotkkot.js (벚꽃결투 좌표 레이아웃)", "group": "데이터" },
   { "path": "../js/engine/gameState.js", "label": "gameState.js (상태)", "group": "엔진" },
   { "path": "../js/engine/phases.js", "label": "phases.js (진행 로직)", "group": "엔진" },
-  { "path": "../js/engine/beotkkotTurns.js", "label": "beotkkotTurns.js (턴 진행)", "group": "엔진" },
+  { "path": "../js/engine/beotkkotTurns.js", "label": "beotkkotTurns.js (멀리건/집중력/턴 진행)", "group": "엔진" },
   { "path": "../js/ui/render.js", "label": "render.js (화면)", "group": "UI" },
-  { "path": "../js/ui/render_beotkkot.js", "label": "render_beotkkot.js (결투 화면)", "group": "UI" },
-  { "path": "../js/ui/beotkkot_test.js", "label": "beotkkot_test.js (테스트용)", "group": "UI" }
+  { "path": "../js/ui/render_beotkkot.js", "label": "render_beotkkot.js (벚꽃결투 화면)", "group": "UI" },
+  { "path": "../js/ui/beotkkot_test.js", "label": "beotkkot_test.js (벚꽃결투 테스트용, 배포 전 제거)", "group": "UI" },
+  { "path": "../css/beotkkot.css", "label": "beotkkot.css (벚꽃결투 스타일)", "group": "스타일" }
 ]
