@@ -6,4 +6,5 @@
   { "path": "../js/engine/gameState.js", "label": "gameState.js (상태)", "group": "엔진" },
   { "path": "../js/engine/phases.js", "label": "phases.js (진행 로직)", "group": "엔진" },
   { "path": "../js/ui/render.js", "label": "render.js (화면)", "group": "UI" }
+  { "path": "..js/data/layoutBeotkkot.js", "label": "layoutBeotkkot.js", "group": "data" }
 ]
