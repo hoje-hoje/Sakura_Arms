@@ -1,0 +1,164 @@
+/* ============================================
+   벚꽃결투 화면 - 좌표 레이아웃(BEOTKKOT_LAYOUT) 기반
+   1696x943 비율 고정 스테이지, 모든 zone은 %-absolute 배치.
+   ============================================ */
+
+:root {
+  --extra: #7fd8c9;
+}
+
+.beotkkot-wrap {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  padding: 12px;
+}
+
+.bk-stage {
+  position: relative;
+  width: 100%;
+  max-width: 1500px;
+  aspect-ratio: 1696 / 943;
+  background: var(--panel);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.bk-zone {
+  position: absolute;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  color: var(--text);
+  font-size: clamp(7px, 0.8vw, 12px);
+  border-radius: 5px;
+}
+
+.bk-zone-container { background: transparent; border: none; }
+
+.bk-zone:not(.bk-zone-container) {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+}
+
+[data-zone="추가판_me"], [data-zone="추가판_you"] {
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 8px 10px;
+  gap: 4px;
+  border: 1px dashed var(--extra) !important;
+  background: rgba(127, 216, 201, 0.06) !important;
+}
+.extra-line { font-size: clamp(8px, 0.85vw, 12px); text-align: left; }
+.extra-goddess {
+  color: var(--extra);
+  background: rgba(127, 216, 201, 0.15);
+  border-radius: 999px;
+  padding: 0 6px;
+  margin-right: 4px;
+}
+.extra-empty { opacity: 0.4; font-size: clamp(8px, 0.85vw, 11px); }
+
+.stat-label { color: var(--accent); font-weight: bold; font-size: clamp(7px, 0.75vw, 11px); }
+.stat-dots { letter-spacing: 1px; }
+.stat-num { font-size: clamp(8px, 0.9vw, 13px); font-weight: bold; }
+
+[data-zone="간격"] { flex-direction: column; gap: 2px; }
+.interval-track { display: flex; flex-direction: column; gap: 2px; flex: 1; justify-content: center; }
+.interval-dot {
+  width: clamp(6px, 0.9vw, 12px);
+  height: clamp(6px, 0.9vw, 12px);
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  background: transparent;
+}
+.interval-dot.filled { background: var(--accent); }
+.interval-num { font-size: clamp(8px, 0.9vw, 12px); font-weight: bold; margin-top: 4px; }
+
+.slot-empty {
+  width: 80%;
+  height: 80%;
+  border-radius: 4px;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+}
+.card-img {
+  width: 90%;
+  height: 90%;
+  object-fit: cover;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+.card-face {
+  width: 90%;
+  height: 90%;
+  border-radius: 4px;
+  background: #3a2f3c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  font-size: clamp(6px, 0.7vw, 10px);
+}
+.card-face.clickable { cursor: pointer; }
+.card-face.clickable:hover { outline: 1px solid var(--accent); }
+.card-face.disabled { opacity: 0.55; cursor: not-allowed; }
+
+.deck-stack { position: relative; width: 70%; aspect-ratio: 34/48; }
+.deck-stack .stack-img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+.deck-stack .stack-img:nth-child(2) { top: -3%; left: 4%; }
+.deck-stack .stack-img:nth-child(3) { top: -6%; left: 8%; }
+
+/* 가로 방향 더미(덮음패 등): 룰상 카드가 뒷면 "가로 방향"으로 놓임(6-2-2-2, 7-1-8).
+   덮음패 zone의 실제 화면 비율(=1.4955, BEOTKKOT_LAYOUT 좌표값 기준 고정값 -
+   스테이지가 1696:943 비율로 잠겨 있어 화면 크기와 무관하게 항상 동일)에
+   맞춰, wrapper는 그 비율의 박스로 두고 안쪽 카드 이미지를 90도 돌려 채운다. */
+.deck-stack-h {
+  aspect-ratio: 1.4955;
+  width: 78%;
+}
+.deck-stack-h .stack-img {
+  width: 67%;   /* wrapper 너비 기준: 100% / 1.4955 */
+  height: auto;
+  aspect-ratio: 512 / 719; /* 카드 뒷면 원본 세로 비율 -> 돌리기 전 폭 기준 높이 자동 계산 */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+.deck-stack-h .stack-img:nth-child(2) { transform: translate(-50%, -50%) rotate(90deg) translateY(-6%); }
+.deck-stack-h .stack-img:nth-child(3) { transform: translate(-50%, -50%) rotate(90deg) translateY(-12%); }
+.deck-count { font-size: clamp(7px, 0.8vw, 11px); margin-top: 2px; }
+.zone-caption { font-size: clamp(6px, 0.65vw, 9px); color: rgba(240, 230, 236, 0.55); }
+
+.zone-btn {
+  background: rgba(232, 143, 176, 0.18);
+  color: var(--text);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  font-size: clamp(6px, 0.7vw, 10px);
+  padding: 4px 2px;
+  cursor: pointer;
+  line-height: 1.3;
+}
+.zone-btn:hover { background: rgba(232, 143, 176, 0.32); }
+
+.focus-token { width: 40%; object-fit: contain; }
+.focus-num { font-size: clamp(8px, 0.9vw, 12px); font-weight: bold; margin-top: 2px; }
+.withered-tag { font-size: clamp(6px, 0.65vw, 9px); color: #9fd6ff; margin-top: 2px; }
+
+.profile-active-label { font-size: clamp(6px, 0.65vw, 9px); color: var(--accent); }
+.profile-active-name { font-size: clamp(8px, 0.9vw, 12px); font-weight: bold; }
+
+.reserved-tag { opacity: 0.25; font-size: clamp(7px, 0.75vw, 10px); }
