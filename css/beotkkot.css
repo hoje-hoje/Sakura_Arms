@@ -162,3 +162,68 @@
 .profile-active-name { font-size: clamp(8px, 0.9vw, 12px); font-weight: bold; }
 
 .reserved-tag { opacity: 0.25; font-size: clamp(7px, 0.75vw, 10px); }
+
+/* ---- 턴 바 (턴 정보 + 턴 종료 버튼) ---- */
+.bk-turnbar {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  padding: 4px 10px;
+  z-index: 20;
+}
+.bk-turnbar-info { font-size: clamp(9px, 0.9vw, 12px); color: var(--text); }
+.bk-endturn-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.focus-spend-btn {
+  margin-top: 3px;
+  padding: 2px 8px;
+  font-size: clamp(6px, 0.65vw, 9px);
+}
+
+/* ---- 멀리건 화면 ---- */
+.bk-mulligan-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bk-mulligan-box {
+  background: var(--panel);
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  padding: 24px 32px;
+  max-width: 560px;
+  width: 90%;
+  text-align: center;
+}
+.bk-mulligan-title { font-size: 18px; font-weight: bold; color: var(--accent); margin-bottom: 8px; }
+.bk-mulligan-desc { font-size: 13px; color: rgba(240, 230, 236, 0.75); margin-bottom: 16px; }
+.bk-mulligan-cards { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; }
+.bk-mulligan-card {
+  width: 80px;
+  height: 112px;
+  background: #3a2f3c;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  font-size: 12px;
+  color: var(--text);
+  cursor: pointer;
+}
+.bk-mulligan-card:hover { border-color: var(--accent); }
+.bk-mulligan-card.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(232, 143, 176, 0.6);
+  opacity: 0.6;
+}
+.bk-mulligan-hidden { color: rgba(240, 230, 236, 0.4); font-size: 13px; padding: 20px; }
+.bk-mulligan-confirm:disabled { opacity: 0.35; cursor: not-allowed; }
