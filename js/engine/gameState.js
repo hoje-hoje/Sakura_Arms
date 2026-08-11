@@ -93,23 +93,49 @@ function createBeotkkotPlayerState(name) {
   };
 }
 
+// Fisher-Yates 셔플 (제자리 변경 + 반환)
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// 카드를 count장 뽑아 손패로 이동. 패산이 비어있으면
+// (원칙적으로는 5-5-3 초조가 발생해야 하지만, 재구성 시스템이 아직 없으므로
+//  여기서는 "더 못 뽑음"으로 단순 처리하고 TODO로 남겨둠)
+function drawCardsFor(beotkkotPlayer, count) {
+  for (let i = 0; i < count; i++) {
+    if (beotkkotPlayer.pile.length === 0) break; // TODO: 5-5-3 초조 처리
+    beotkkotPlayer.hand.push(beotkkotPlayer.pile.shift());
+  }
+}
+
 // ============================================
 // 벚꽃결투 준비 (통합 규칙 4-1)
 // 안전구축까지 끝난 gameState.players 정보를 바탕으로
 // gameState.beotkkot을 실제로 만들어 채운다.
 // 이 함수를 호출하지 않으면 gameState.beotkkot이 계속 null로 남는다.
+//
+// 4-1-1~4-1-4까지(벚꽃결정 배치, 덱 배치, 활성 플레이어 결정, 손패 3장 드로우)를
+// 여기서 처리하고, 4-1-5(멀리건)는 사용자 조작이 필요하므로
+// gameState.beotkkot.phaseInTurn = "MULLIGAN" 상태로 넘겨서 UI가 처리하게 한다.
+// 멀리건이 끝나면(beotkkotTurns.js의 finishMulligan()) 4-1-6, 4-1-7이 이어서 실행된다.
 // ============================================
 function setupBeotkkotGyeoltu() {
   gameState.beotkkot = {
     activePlayerIndex: 0,
-    turnNumber: 1,
-    phaseInTurn: null,
+    turnNumber: 0, // 멀리건 끝나고 나서 1이 됨 (4-1-7)
+    phaseInTurn: "MULLIGAN",
+    mulliganPlayerIndex: 0,   // 지금 멀리건 차례인 플레이어
+    mulliganSelected: [],     // 그 플레이어가 바꾸기로 고른 손패 인덱스들
 
-    // 5-2-1, 5-2-2: 간격 / 달인의 간격
-    interval: 5,
+    // 4-1-1: <간격>에 10개
+    interval: 10,
     masterInterval: 2,
 
-    // 5-2-3: 더스트
+    // 4-1-1: <더스트>는 별도 언급 없지만 시작은 0
     dust: 0,
 
     players: [
@@ -120,6 +146,7 @@ function setupBeotkkotGyeoltu() {
 
   // 4-1-3: 활성 플레이어 무작위 선택
   gameState.beotkkot.activePlayerIndex = Math.floor(Math.random() * 2);
+  gameState.beotkkot.mulliganPlayerIndex = gameState.beotkkot.activePlayerIndex; // 활성부터 멀리건
 
   gameState.players.forEach((prepPlayer, i) => {
     const bp = gameState.beotkkot.players[i];
@@ -131,6 +158,10 @@ function setupBeotkkotGyeoltu() {
       card: { goddessId: c.goddess, cardId: c.id },
       used: false,
     }));
+
+    // 4-1-4: 패산을 잘 섞고 3장 뽑는다
+    shuffleArray(bp.pile);
+    drawCardsFor(bp, 3);
   });
 
   gameState.phase = PHASE.BEOTKKOT_GYEOLTU;
