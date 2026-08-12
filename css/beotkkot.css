@@ -43,6 +43,12 @@
 
 .bk-zone-container { background: transparent; border: none; }
 
+[data-zone="게임판"] {
+  background-image: url("../assets/ui/game-board.png");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
 .bk-zone:not(.bk-zone-container) {
   background: rgba(255, 255, 255, 0.03);
   border: 1px dashed rgba(255, 255, 255, 0.12);
@@ -89,9 +95,10 @@
   border: 1px dashed rgba(255, 255, 255, 0.15);
 }
 .card-img {
-  width: 78%;
-  height: 78%;
-  object-fit: cover;
+  max-width: 92%;
+  max-height: 92%;
+  aspect-ratio: 34 / 48;
+  object-fit: contain;
   border-radius: 4px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
@@ -220,15 +227,16 @@
 /* ---- 카드 앞면: 이미지 우선, 실패시 텍스트 폴백 ---- */
 .card-face {
   position: relative;
-  width: 78%;
-  height: 78%;
+  max-width: 92%;
+  max-height: 92%;
+  aspect-ratio: 34 / 48;
   border-radius: 4px;
   overflow: hidden;
 }
 .card-face-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: 4px;
 }
 .card-face-fallback {
